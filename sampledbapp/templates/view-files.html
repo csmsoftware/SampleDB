@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row">
+
+    <div class="col-lg-6 page-header">
+        <div class="col-lg-3">
+            <h3>Files </h3>
+            <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+        </div>
+        <div class="col-lg-7">
+            <p class="lead"><i class="fa fa-flash fa-fw"></i>View, download, and upload files</p>
+        </div>
+        <div class="col-lg-2">
+            <a href="#"><button class="btn btn-success" data-toggle="modal" data-target="#upload-modal">Upload new file</button></a>
+        </div>
+
+    </div>
+
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <!-- <div class="panel-heading">
+                Project list
+            </div> -->
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>project</th>
+                            <th>filename</th>
+                            <th>uploaded by</th>
+                            <th>datetime_uploaded</th>
+                            <th>datetime_last_accessed</th>
+                            <th>type</th>
+                            <th>download</th>
+                        </tr>
+                        </thead>
+                        <tbody id="file-table">
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
+<div class="modal fade" id="upload-modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Excel upload <span class="pull-right"><a href="/static/xls_templates/template1.xlsx" download>Download template</a> &nbsp;&nbsp;&nbsp;&nbsp;</span></h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" id="upload-excel-form" method="post" action="" id="file-upload">
+                    <div class="form-group" id="error-project-group">
+                        <label class="control-label" for="modal-dropdown">Select and check project</label>
+
+                        <select id="modal-dropdown" name="project_id" class="form-control">>
+                            <option value="none" selected>----</option>
+
+                            {% for project in projects %}
+                            <option id="pf-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <div style="display:none;" class="form-error" id="error-project">Select project</div>
+                    </div>
+                    <br />
+                    <div class="form-group " id="error-file-group">
+                        <!-- <label class="control-label btn btn-default btn-file" for="file-upload-input">Select your file to upload</label> -->
+                        <label class="control-label" for="file-upload-input">Select your file to upload</label>
+                        <input class="btn btn-warning" id="file-upload-input" name="file-upload-input" type="file" />
+                        <div style="display:none;" class="form-error" id="error-file">Select file</div>
+                    </div>
+                </form>
+                <br />
+                <div>
+                    <p>
+                        <strong>Upload progress</strong>
+                        <span class="pull-right text-muted upload-status">0%</span>
+                    </p>
+                    <div class="progress progress-striped active">
+                        <div id="upload-progress-bar" class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                            <span id="upload-status" class="sr-only">Please select a file</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                    <span class="pull-left">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </span>
+                <span class="pull-right">
+                        <button type="button" class="btn btn-primary" id="upload-excel">Upload</button>
+                    </span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    $(document).ready(function(ev) {
+
+        get_files();
+
+    });
+
+    function get_files(){
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get-files',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            },
+            success: function(data){
+
+                show_files(data);
+
+            },
+            error: function(data){
+
+                console.log('ajax/get-files error');
+            }
+
+        });
+
+    }
+
+    function show_files(data){
+
+        files = JSON.parse(data.files);
+       //projects = JSON.parse(data.projects);
+
+        html = "";
+
+        for(i=0;i<files.length;i++) {
+
+            file = files[i];
+            html = html + "<tr><td>" + data.projectnames[file.pk] + "</td>";
+            html = html + "<td>" + file.fields.filename + "</td>";
+            html = html + "<td>" + data.usernames[file.pk] + "</td>";
+            html = html + "<td>" + file.fields.datetime_uploaded + "</td>";
+            html = html + "<td>" + file.fields.datetime_last_accessed + "</td>";
+            html = html + "<td>" + file.fields.type + "</td>";
+            html = html + "<td><a href='/download-file/?file_id=" + file.pk + "'><button class='btn btn-xs btn-info'>Download</button></a></td>";
+            html = html + "</tr>";
+        }
+
+        $('#file-table').html(html);
+
+    }
+
+    // UPLOAD MODAL
+
+    // Upload modal submit button
+    $(document).on('click','#upload-excel',function(ev) {
+
+        ev.preventDefault();
+
+        var file = $('#file-upload-input')[0].files[0];
+
+        var project_id = $('#modal-dropdown').attr('selected','selected').val();
+
+        var fail = false;
+
+        if(project_id == 'none'){
+            $('#error-project-group').addClass('has-error');
+            fail = true;
+        } else {
+            $('#error-project-group').removeClass('has-error');
+        }
+
+        if(!file){
+            $('#error-file-group').addClass('has-error');
+            fail = true;
+        } else {
+            $('#error-file-group').removeClass('has-error');
+        }
+        if (!fail){
+
+            var upload = new Upload(file,project_id);
+            upload.doUpload();
+
+        }
+
+
+    });
+
+    $("#file-upload-input").on("change", function (e) {
+
+        $(this).removeClass('btn-warning');
+        $(this).addClass('btn-success');
+        $('#upload-excel').removeAttr("disabled");
+
+    });
+
+    // Upload class for uploading excel files by ajax
+    var Upload = function (file,project_id) {
+        this.file = file;
+        this.project_id = project_id;
+    };
+
+    Upload.prototype.getType = function() {
+        return this.file.type;
+    };
+    Upload.prototype.getSize = function() {
+        return this.file.size;
+    };
+    Upload.prototype.getName = function() {
+        return this.file.name;
+    };
+    Upload.prototype.doUpload = function () {
+        var that = this;
+        var formData = new FormData();
+
+        // add assoc key values, this will be posts values
+        formData.append("file", this.file, this.getName());
+        formData.append("upload_file", true);
+        formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+        formData.append("project_id", this.project_id);
+
+        $('#upload-excel').attr("disabled", "disabled");
+
+        $.ajax({
+            type: "POST",
+            url: "/ajax/submit-file-upload/",
+            xhr: function () {
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) {
+                    myXhr.upload.addEventListener('progress', that.progressHandling, false);
+                }
+                return myXhr;
+            },
+            success: function (data) {
+
+                // your callback here
+                console.log(data);
+                console.log("file upload")
+                $("#upload-progress-bar").css("width", "100%");
+                $("#upload-progress-bar").removeClass("progress-bar-danger");
+                $("#upload-progress-bar").removeClass("progress-bar-primary");
+                $("#upload-progress-bar").addClass("progress-bar-success");
+                $(".upload-status").html("File uploaded. <a href='/pending-commits'>Please check pending commits</a>");
+                $('#upload-excel').removeAttr("disabled");
+                get_files();
+            },
+            error: function (error) {
+                // handle error
+                console.log(error);
+                $("#upload-progress-bar").css("width", "100%");
+                $("#upload-progress-bar").removeClass("progress-bar-primary");
+                $("#upload-progress-bar").addClass("progress-bar-danger");
+                $(".upload-status").text("Failed");
+            },
+            async: true,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            timeout: 60000
+        });
+    };
+
+    Upload.prototype.progressHandling = function (event) {
+        var percent = 0;
+        var position = event.loaded || event.position;
+        var total = event.total;
+        if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+        }
+        // update progressbars classes so it fits your code
+        $("#upload-progress-bar").css("width", +percent + "%");
+        $(".upload-status").text(percent + "%");
+    };
+
+</script>
+
+{% endblock %}

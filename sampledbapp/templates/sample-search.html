@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-6 col-sm-12 page-header">
+        <div class="col-lg-5">
+            <h3>Sample search </h3>
+            <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+        </div>
+        <div class="col-lg-6">
+            <p class="lead"><i class="fa fa-flash fa-fw"></i>Enter fields for search</p>
+        </div>
+        <div class="col-lg-1">
+            <button type="text" id="run_search" class="btn btn-lg btn-success">Search</button>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-lg-9 col-sm-12">
+        <div class="panel panel-default">
+            <!--            <div class="panel-heading">
+                            Sample list
+                        </div> -->
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form role="form" method="post" action="#" id="project-filter">
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label" for="sample_id_search">Sample ID</label>
+                            <br />
+                            <input type="text" id="sample_id_search" value=""/>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label" for="box_id_search">Box</label>
+                            <br />
+                            <input type="text" id="box_id_search" value=""/>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label" for="freezer_search">Freezer</label>
+                            <br />
+                            <input type="text" id="freezer_search" value=""/>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label" for="parent_id_search">Parent ID</label>
+                            <br />
+                            <input type="text" id="parent_id_search" value=""/>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label" for="tissue_bank_reference_search">Tissue Bank Reference</label>
+                            <br />
+                            <input type="text" id="tissue_bank_reference_search" value=""/>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default"  id="sample-table" style="display:none;">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Project title</th>
+                            <th>Study title</th>
+                            <th>Sample ID</th>
+                            <th>Species</th>
+                            <th>Sample storage type</th>
+                            <th>Sample matrix</th>
+                            <th>Collection protocol</th>
+                            <th>Campus</th>
+                            <th>Building</th>
+                            <th>Room</th>
+                            <th>Freezer ID</th>
+                            <th>Shelf ID</th>
+                            <th>Box ID</th>
+                            <th>Parent type</th>
+                            <th>Parent ID</th>
+                            <th>Consent form information</th>
+                            <th>Tissue bank reference</th>
+                            <th>Hazard group</th>
+                            <th>Hazard description</th>
+                            <th>Date created</th>
+                            <th>Date last edited</th>
+                            <th>User Last Edited</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sample-search-table">
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    var list_of_visible_samples = [];
+    var sample_extras = [];
+
+    $(document).ready(function(ev) {
+
+        $(document).on('click','#run_search',function(ev) {
+
+            ev.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/search-samples',
+                data: {
+                    csrfmiddlewaretoken:'{{ csrf_token }}',
+                    sample_id:  $('#sample_id_search').val(),
+                    box_id:  $('#box_id_search').val(),
+                    freezer_id:  $('#freezer_search').val(),
+                    parent_id:  $('#parent_id_search').val(),
+                    tissue_bank_reference:  $('#tissue_bank_reference_search').val()
+                },
+                success: function(data){
+
+                    list_of_visible_samples = JSON.parse(data.samples);
+
+                    console.log(list_of_visible_samples)
+
+                    sample_extras = data.sample_extras;
+                    console.log(sample_extras);
+                    display_samples_for_audit('#sample-search-table');
+                    $('#sample-table').show();
+
+                    //alert("Your samples have been sent for staging checks - Check pending commits");
+
+                },
+                error: function(data){
+
+                    console.log('it errors');
+                }
+            });
+
+        });
+
+        $(document).keypress(function(e){
+            if (e.which == 13){
+                $("#run_search").click();
+            }
+        });
+
+    });
+
+
+    function display_samples_for_audit(target_selector){
+
+        html = "";
+
+        for(i=0;i<list_of_visible_samples.length;i++){
+
+            sample = list_of_visible_samples[i];
+            sample_extra = sample_extras[sample.pk];
+
+            html = html + '<tr class="clickable-row" id="s-' + sample.pk + '">';
+            html = html + '<td class="sample-pk">' + sample.pk + '</td>';
+
+            html = html + '<td id="project_title-' + sample.pk + '">' + sample_extra.project_title + '</td>';
+            html = html + '<td id="study_title-' + sample.pk + '">' + ((sample.fields.study_title != null) ? sample.fields.study_title : "" ) + '</td>';
+            html = html + '<td id="sample_id-' + sample.pk + '">' + ((sample.fields.sample_id != null) ? sample.fields.sample_id : "" ) + '</td>';
+            html = html + '<td id="species-' + sample.pk + '">' + ((sample.fields.species != null) ? sample.fields.species : "" ) + '</td>';
+            html = html + '<td id="sample_storage_type-' + sample.pk + '">' + ((sample.fields.sample_storage_type != null) ? sample.fields.sample_storage_type : "" ) + '</td>';
+            html = html + '<td id="sample_matrix-' + sample.pk + '">' + ((sample.fields.sample_matrix != null) ? sample.fields.sample_matrix : "" ) + '</td>';
+            html = html + '<td id="collection_protocol-' + sample.pk + '">' + ((sample.fields.collection_protocol != null) ? sample.fields.collection_protocol : "" ) + '</td>';
+            html = html + '<td id="campus-' + sample.pk + '">' + ((sample.fields.campus != null) ? sample.fields.campus : "" ) + '</td>';
+            html = html + '<td id="building-' + sample.pk + '">' + ((sample.fields.building != null) ? sample.fields.building : "" ) + '</td>';
+            html = html + '<td id="room-' + sample.pk + '">' + ((sample.fields.room != null) ? sample.fields.room : "" ) + '</td>';
+            html = html + '<td id="freezer_id-' + sample.pk + '">' + ((sample.fields.freezer_id != null) ? sample.fields.freezer_id : "" ) + '</td>';
+            html = html + '<td id="shelf_id-' + sample.pk + '">' + ((sample.fields.shelf_id != null) ? sample.fields.shelf_id : "" ) + '</td>';
+            html = html + '<td id="box_id-' + sample.pk + '">' + ((sample.fields.box_id != null) ? sample.fields.box_id : "" ) + '</td>';
+            html = html + '<td id="parent_type-' + sample.pk + '">' + ((sample.fields.parent_type != null) ? sample.fields.parent_type : "" ) + '</td>';
+            html = html + '<td id="parent_id-' + sample.pk + '">' + ((sample.fields.parent_id != null) ? sample.fields.parent_id : "" ) + '</td>';
+            html = html + '<td id="consent_form_information-' + sample.pk + '">' + ((sample.fields.consent_form_information != null) ? sample.fields.consent_form_information : "" ) + '</td>';
+            html = html + '<td id="tissue_bank_reference-' + sample.pk + '">' + ((sample.fields.tissue_bank_reference != null) ? sample.fields.tissue_bank_reference : "" ) + '</td>';
+            html = html + '<td id="hazard_group-' + sample.pk + '">' + ((sample.fields.hazard_group != null) ? sample.fields.hazard_group : "" ) + '</td>';
+            html = html + '<td id="hazard_description-' + sample.pk + '">' + ((sample.fields.hazard_description != null) ? sample.fields.hazard_description : "" ) + '</td>';
+            html = html + '<td id="datetime_created-' + sample.pk + '">' + sample.fields.datetime_created + '</td>';
+            html = html + '<td id="last_modified-' + sample.pk + '">' + ((sample.fields.last_modified != null) ? sample.fields.last_modified : "" ) + '</td>';
+            html = html + '<td id="user_last_edited-' + sample.pk + '">' + sample.fields.user_last_edited + '</td>';
+            html = html + '</tr>';
+
+        }
+
+        $(target_selector).html(html);
+
+
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+django==2.0.3
+django-admin-bootstrapped==2.5.7
+django_rq==1.0.1
+openpyxl==2.5.1
+pandas==0.22.0
+gunicorn==19.7.1

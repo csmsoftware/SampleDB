@@ -1,0 +1,961 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 page-header">
+        <div class="col-lg-3">
+            <h3>Project Samples </h3>
+            <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+        </div>
+        <div class="col-lg-8">
+            <p class="lead"><i class="fa fa-flash fa-fw"></i>View a project, select samples, edit, export, and upload.</p>
+        </div>
+        <div class="col-lg-1">
+            &nbsp;
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+<!--            <div class="panel-heading">
+                Sample list
+            </div> -->
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <form role="form" method="post" action="#" id="project-filter">
+                        <div class="form-group">
+                            <label class="control-label" for="project-dropdown">Select project</label>
+
+                         <!--   {% for project in projects %}
+                                {{ project.id }}
+                            {% endfor %}
+                            {{ current_project }} -->
+
+                            <select id="project-dropdown" name="group_id" class="form-control">>
+                                <option value="none" selected>----</option>
+                                {% for project in projects %}
+
+                                    <!--{% if project.id == current_project %}
+                                        <option id="p-' + {{ project.id }} + '" value="{{ project.id }}" selected>{{ project.title }}</option>
+                                    {% else %} -->
+                                        <option id="p-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                                    <!-- {% endif %} -->
+                                {% endfor %}
+                            </select>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row">&nbsp;</div>
+                        <div class="row">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <!-- <button type="submit" class="btn btn-info apply-filters">Apply filters</button>-->
+
+                            <button type="submit" class="btn btn-info select-all">Select all visible</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="submit" class="btn btn-warning edit-fields">Edit fields</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="submit" class="btn btn-danger submit-changes">Submit changes</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-primary export-excel">Export excel</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn btn-success upload-excel" data-toggle="modal" data-target="#upload-modal">Upload excel</button>
+
+                            <button type="button" class="btn btn-danger delete-samples" data-toggle="modal" data-target="#delete-samples">Delete samples</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row study-filter" style="display:none;">
+                    <div class="col-lg-4">
+                        <form role="form" method="post" action="#" id="study-filter">
+                            <div class="form-group">
+                                <label class="control-label" for="project-dropdown">Select study</label>
+
+                                <!--   {% for project in projects %}
+                                       {{ project.id }}
+                                   {% endfor %}
+                                   {{ current_project }} -->
+
+                                <select id="study-dropdown" name="group_id" class="form-control">
+
+
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="nav-active-samples-tab" data-toggle="tab" href="#nav-active-samples" role="tab" aria-controls="nav-active-samples" aria-selected="true">Active samples</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-deleted-samples-tab" data-toggle="tab" href="#nav-deleted-samples" role="tab" aria-controls="nav-deleted-samples" aria-selected="false">Deleted samples</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade in active" id="nav-active-samples" role="tabpanel" aria-labelledby="nav-active-samples-tab">
+
+                        <div class="table-responsive">
+                            <table class="table" id="sample-table" style="display:none;">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Study title</th>
+                                    <th>Sample ID</th>
+                                    <th>Species</th>
+                                    <th>Sample storage type</th>
+                                    <th>Sample matrix</th>
+                                    <th>Collection protocol</th>
+                                    <th>Campus</th>
+                                    <th>Building</th>
+                                    <th>Room</th>
+                                    <th>Freezer ID</th>
+                                    <th>Shelf ID</th>
+                                    <th>Box ID</th>
+                                    <th>Parent type</th>
+                                    <th>Parent ID</th>
+                                    <th>Consent form information</th>
+                                    <th>Tissue bank reference</th>
+                                    <th>Hazard group</th>
+                                    <th>Hazard description</th>
+                                    <th>Date created</th>
+                                </tr>
+
+                                <!--  <tr>
+                                       <th>&nbsp;</th>
+                                       <th><input class="mf" id="mf-study-title" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-species" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-storage-type" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-matrix" type="text" /></th>
+                                       <th><input class="mf" id="mf-collection-protocol" type="text" /></th>
+                                       <th><input class="mf" id="mf-campus" type="text" /></th>
+                                       <th><input class="mf" id="mf-building" type="text" /></th>
+                                       <th><input class="mf" id="mf-room" type="text" /></th>
+                                       <th><input class="mf" id="mf-freezer-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-shelf-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-box-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-parent-type" type="text" /></th>
+                                       <th><input class="mf" id="mf-parent-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-consent-form-information" type="text" /></th>
+                                       <th><input class="mf" id="mf-tissue-bank-reference" type="text" /></th>
+                                       <th><input class="mf" id="mf-hazard-group" type="text" /></th>
+                                       <th><input class="mf" id="mf-hazard-description" type="text" /></th>
+                                       <th><input class="mf" id="mf-datetime-created" type="text" /></th>
+                                   </tr>-->
+
+                                </thead>
+
+                                <tbody id="sample-table-body">
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                    <div class="tab-pane fade" id="nav-deleted-samples" role="tabpanel" aria-labelledby="nav-deleted-samples-tab">
+
+                        <div class="table-responsive">
+                            <table class="table" id="deleted-table" style="display:none;">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Study title</th>
+                                    <th>Sample ID</th>
+                                    <th>Species</th>
+                                    <th>Sample storage type</th>
+                                    <th>Sample matrix</th>
+                                    <th>Collection protocol</th>
+                                    <th>Campus</th>
+                                    <th>Building</th>
+                                    <th>Room</th>
+                                    <th>Freezer ID</th>
+                                    <th>Shelf ID</th>
+                                    <th>Box ID</th>
+                                    <th>Parent type</th>
+                                    <th>Parent ID</th>
+                                    <th>Consent form information</th>
+                                    <th>Tissue bank reference</th>
+                                    <th>Hazard group</th>
+                                    <th>Hazard description</th>
+                                    <th>Date created</th>
+                                </tr>
+
+                                <!--  <tr>
+                                       <th>&nbsp;</th>
+                                       <th><input class="mf" id="mf-study-title" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-species" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-storage-type" type="text" /></th>
+                                       <th><input class="mf" id="mf-sample-matrix" type="text" /></th>
+                                       <th><input class="mf" id="mf-collection-protocol" type="text" /></th>
+                                       <th><input class="mf" id="mf-campus" type="text" /></th>
+                                       <th><input class="mf" id="mf-building" type="text" /></th>
+                                       <th><input class="mf" id="mf-room" type="text" /></th>
+                                       <th><input class="mf" id="mf-freezer-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-shelf-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-box-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-parent-type" type="text" /></th>
+                                       <th><input class="mf" id="mf-parent-id" type="text" /></th>
+                                       <th><input class="mf" id="mf-consent-form-information" type="text" /></th>
+                                       <th><input class="mf" id="mf-tissue-bank-reference" type="text" /></th>
+                                       <th><input class="mf" id="mf-hazard-group" type="text" /></th>
+                                       <th><input class="mf" id="mf-hazard-description" type="text" /></th>
+                                       <th><input class="mf" id="mf-datetime-created" type="text" /></th>
+                                   </tr>-->
+
+                                </thead>
+
+                                <tbody id="deleted-table-body">
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+            <div class="panel-footer">
+                <button type="submit" class="btn btn-info btn-xs select-all">Select all</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="submit" class="btn btn-warning btn-xs edit-fields">Edit fields</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="submit" class="btn btn-danger btn-xs submit-changes">Submit Changes</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-primary btn-xs export-exce">Export Excel</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-success btn-xs upload-excel" data-toggle="modal" data-target="#upload-modal">Upload excel</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-danger btn-xs delete-samples" data-toggle="modal" data-target="#delete-samples">Delete samples</button>
+            </div>
+        </div>
+        <!-- /.panel -->
+    </div>
+
+    <div class="modal fade" id="upload-modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Excel upload <span class="pull-right"><a href="/static/xls_templates/template1.xlsx" download>Download template</a> &nbsp;&nbsp;&nbsp;&nbsp;</span></h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" id="upload-excel-form" method="post" action="" id="file-upload">
+                        <div class="form-group" id="error-project-group">
+                            <label class="control-label" for="modal-dropdown">Select and check project</label>
+
+                            <select id="modal-dropdown" name="project_id" class="form-control">>
+                                <option value="none" selected>----</option>
+
+                                {% for project in projects %}
+                                    <option id="pf-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <div style="display:none;" class="form-error" id="error-project">Select project</div>
+                        </div>
+                        <br />
+                        <div class="form-group " id="error-file-group">
+                            <!-- <label class="control-label btn btn-default btn-file" for="file-upload-input">Select your file to upload</label> -->
+                            <label class="control-label" for="file-upload-input">Select your file to upload</label>
+                            <input class="btn btn-warning" id="file-upload-input" name="file-upload-input" type="file" />
+                            <div style="display:none;" class="form-error" id="error-file">Select file</div>
+                        </div>
+                    </form>
+                    <br />
+                    <div>
+                        <p>
+                            <strong>Upload progress</strong>
+                            <span class="pull-right text-muted upload-status">0%</span>
+                        </p>
+                        <div class="progress progress-striped active">
+                            <div id="upload-progress-bar" class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                <span id="upload-status" class="sr-only">Please select a file</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <span class="pull-left">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </span>
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-primary" id="upload-excel">Upload</button>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="delete-samples" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Delete samples</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="delete-samples-counter"></p>
+                    <form role="form" id="delete-samples-form" method="post" action="" id="sample-delete">
+                        <div class="form-group" id="error-protocol-group">
+                            <label class="control-label" for="disposal-dropdown">Select disposal route</label>
+
+                            <select id="disposal-dropdown" name="disposal-route" class="form-control">>
+                                <option value="none" selected>----</option>
+
+                                <option value="Recognisable Tissue">Recognisable Tissue</option>
+                                <option value="Chemicals">Chemicals</option>
+                                <option value="DB Administration">DB Administration</option>
+                            </select>
+                            <div style="display:none;" class="form-error" id="error-sample-delete">Select a disposal route</div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="pull-left">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </span>
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-primary" id="submit-sample-delete">Submit</button>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    var list_of_editing_rows = [];
+    var list_of_loaded_samples = [];
+    var active_mini_filters = {};
+
+    $(document).ready(function(ev) {
+
+        // get project_id from get vars
+        // change the dropdown to this one
+
+        project_id = getParameterByName('project_id');
+
+        //console.log(project_id)
+
+        //console.log($('#p-' + project_id).html());
+
+        $('#p-' + project_id).attr('selected','selected');
+        $('#pf-' + project_id).attr('selected','selected');
+
+        get_study_titles_by_project(project_id);
+
+    });
+
+    $(document).on('change','#project-dropdown',function(ev) {
+
+       ev.preventDefault();
+       project_id = $(this).val();
+
+        $('#pf-' + project_id).attr('selected','selected');
+
+        // set the url
+        setUrl(project_id);
+
+        get_study_titles_by_project(project_id);
+
+    });
+
+    $(document).on('change','#study-dropdown',function(ev){
+
+        filter_samples_by_project_and_study(getParameterByName('project_id'),$(this).val());
+
+    });
+
+    function get_study_titles_by_project(project_id){
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get-project-studies',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                project_id: project_id
+            },
+            success: function(data){
+
+
+                html = '<option value="none" selected>----</option>';
+
+                for(i=0;i<data.study_titles.length;i++){
+                    html = html + '<option id="s-' + data.study_titles[i] + '" value="' + data.study_titles[i] + '">' + data.study_titles[i] + '</option>';
+                }
+
+
+                $('#study-dropdown').html(html);
+
+                $('.study-filter').show();
+
+
+            },
+            error: function(data){
+
+                console.log('ajax/get-samples error');
+            }
+
+        });
+
+    }
+
+    // Retrieve the samples by ajax
+    function filter_samples_by_project_and_study(project_id,study_title){
+
+       // var filters = {'sample_id':'sample15'};
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get-samples',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                project_id: project_id,
+                study_title: study_title
+            },
+            onLoading: $.LoadingOverlay("show"),
+            success: function(data){
+
+                load_table_with_data(data);
+
+                $.LoadingOverlay("hide");
+
+            },
+            error: function(data){
+
+                console.log('ajax/get-samples error');
+                $.LoadingOverlay("hide");
+            }
+
+        });
+    }
+
+    function load_table_with_data(data){
+
+
+
+        // 1. Create a data structure with all the results
+        // 2. Paginate
+        // 3. Filter by mini-filters
+        // 4. Display samples for view.
+
+       // console.log(JSON.parse(data.samples))
+
+        list_of_loaded_samples = JSON.parse(data.samples);
+        deleted_samples = JSON.parse(data.deleted_samples);
+
+      //  list_of_visible_samples = apply_filters_and_pagination();
+
+
+        // TODO: Apply the filters and pagination here.
+        list_of_visible_samples = list_of_loaded_samples;
+
+
+
+
+        display_samples('#sample-table-body',list_of_visible_samples,true);
+
+      //  $('#nav-active-samples-tab').addClass('active');
+      //  $('#nav-active-samples').addClass('show');
+      //  $('#nav-active-samples').addClass('active');
+
+
+        display_samples('#deleted-table-body',deleted_samples,false);
+        $('#sample-table').show();
+        $('#deleted-table').show();
+
+    }
+
+    function apply_filters_and_pagination(){
+
+
+
+        number_of_visible_samples = 100;
+
+        number_of_pages = list_of_loaded_samples.length / number_of_visible_samples;
+
+
+
+        console.log(number_of_visible_samples);
+        console.log(number_of_pages);
+
+        return [];
+
+    }
+
+
+
+    $(document).on('click','.submit-changes',function(ev) {
+
+        ev.preventDefault();
+
+        var form_data = $('#sample-table').find(':input').serialize();
+
+        var edited_pks = $('.edited-pks').serialize();
+
+        project_id = getParameterByName('project_id');
+
+        console.log(project_id);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/submit-edit-samples',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                project_id:  project_id,
+                form_data: form_data,
+                edited_pks: edited_pks,
+            },
+            onLoading: $.LoadingOverlay("show"),
+            success: function(data){
+
+                window.location.href = '/pending-commits/';
+
+                //alert("Your samples have been sent for staging checks - Check pending commits");
+
+            },
+            error: function(data){
+
+                $.LoadingOverlay("hide");
+                console.log('it errors');
+            }
+        });
+
+
+    });
+
+
+    $(document).on('click','.select-all',function(ev) {
+
+        ev.preventDefault();
+
+        $("#sample-table-body").find('.clickable-row').addClass('active');
+
+    });
+
+    $(document).on('click','.edit-fields',function(ev) {
+
+        $.LoadingOverlay("show");
+
+        ev.preventDefault();
+
+        var active_list = $( "#sample-table" ).find( ".active" );
+
+        if (active_list.length == 0){
+            alert('Please click rows to edit them.');
+            return;
+        }
+
+
+//        console.log(active_list)
+
+       // $('#sample-table > tbody > tr').eq(1).after('row html');
+
+        for(var i=0; i < active_list.length; i++){
+
+            //console.log(i)
+           // console.log(active_list[i]);
+
+            // insert row below here:
+
+           // $('#my_table > tbody > tr').eq(i-1).after(html);
+
+            var sample_pk = $(active_list[i]).find('.sample-pk').html();
+
+            // get the sample pk and see if its in the active list:
+
+            //console.log(active_list[i].rowIndex)
+
+
+            if (list_of_editing_rows.indexOf(sample_pk) == -1){
+
+                var zero_index = active_list[i].rowIndex - 1
+                $('#sample-table > tbody > tr').eq(zero_index).after(build_edit_html(active_list[i]));
+                list_of_editing_rows.push(sample_pk)
+
+            }
+
+        }
+        $.LoadingOverlay("hide");
+
+    });
+
+    // Clicky rows yeh.
+    $(document).on('click', '.clickable-row', function(event) {
+
+        if ($(this).hasClass('active')){
+
+            console.log('is active')
+            $(this).removeClass('active');
+
+        } else {
+
+            $(this).addClass('active');
+            console.log("is not active")
+
+        }
+
+    });
+
+    // Cancel the edit for this row
+    $(document).on('click', '.cancel-edit', function(event) {
+
+        $.LoadingOverlay("show");
+
+        event.preventDefault();
+
+        var row_index = $(this).closest('.edit-row')[0].rowIndex;
+
+        //console.log("Row index")
+        //console.log(row_index)
+
+        var sample_pk_with_suffix = $(this).prop('id');
+        var sample_pk = sample_pk_with_suffix.substring(3,sample_pk_with_suffix.length)
+
+//        console.log(sample_pk_with_suffix)
+        //console.log("Sample pk")
+        //console.log(sample_pk)
+
+        //console.log($(this).closest('.edit-row')[0].rowIndex)
+
+        // delete the row
+        $(this).closest('tr')[0].remove();
+
+
+        // remove from list_of_editing_rows
+        var index = list_of_editing_rows.indexOf(sample_pk);
+
+        if (index > -1){
+            list_of_editing_rows.splice(index,1)
+        }
+
+        $.LoadingOverlay("hide");
+
+
+    });
+
+    function build_edit_html(row_data){
+
+      //  console.log(row_data)
+
+        //return 'yes'
+
+        //console.log($(row_data).children('td.sample-pk').val())
+
+        var full_id = $(row_data).prop('id');
+        var sample_pk = full_id.substring(2,full_id.length);
+     //   console.log(sample_pk)
+
+     //   console.log($('#st-'+ sample_pk));
+
+        html = '<tr style="font-style:italic;" class="edit-row danger" id="' + sample_pk + '"><td><button id="ce-' + sample_pk + '" class="btn btn-primary btn-sm cancel-edit" href="#">Cancel</button></td>';
+        //html = html + '<textarea><textarea class="form-control" name="study_title-'+ sample_pk + '">' + $('#study_title-'+ sample_pk).html() + '</textarea>';
+        html = html + '<td><input name="study_title-'+ sample_pk + '" value="' + $('#study_title-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="sample_id-'+ sample_pk + '" value="' + $('#sample_id-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="species-'+ sample_pk + '" value="' + $('#species-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="sample_storage_type-'+ sample_pk + '" value="' + $('#sample_storage_type-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="sample_matrix-'+ sample_pk + '" value="' + $('#sample_matrix-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="collection_protocol-'+ sample_pk + '" value="' + $('#collection_protocol-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="campus-'+ sample_pk + '" value="' + $('#campus-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="building-'+ sample_pk + '" value="' + $('#building-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="room-'+ sample_pk + '" value="' + $('#room-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="freezer_id-'+ sample_pk + '" value="' + $('#freezer_id-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="shelf_id-'+ sample_pk + '" value="' + $('#shelf_id-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="box_id-'+ sample_pk + '" value="' + $('#box_id-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="parent_type-'+ sample_pk + '" value="' + $('#parent_type-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="parent_id-'+ sample_pk + '" value="' + $('#parent_id-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="consent_form_information-'+ sample_pk + '" value="' + $('#consent_form_information-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="tissue_bank_reference-'+ sample_pk + '" value="' + $('#tissue_bank_reference-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="hazard_group-'+ sample_pk + '" value="' + $('#hazard_group-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td><input type="text" name="hazard_description-'+ sample_pk + '" value="' + $('#hazard_description-'+ sample_pk).html() + '"/></td>';
+        html = html + '<td>' + $('#datetime_created-'+ sample_pk).html() + '</td>';
+        html = html + '<input type="hidden" class="edited-pks" name="edited_pks[]" value="' + sample_pk + '" /></tr>';
+
+        return html
+
+    }
+
+    /**
+     * Sets the url using the filters
+     * @param project_id
+     */
+    function setUrl(project_id){
+
+        url = window.location.href;
+
+        uri = url.split('?')[0];
+
+        new_url = uri + "?project_id=" + project_id;
+
+        window.history.replaceState( {} , document.title, new_url );
+
+    }
+
+    function getParameterByName(name) {
+        url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    // File export
+    $(document).on('click','.export-excel',function(ev) {
+        ev.preventDefault();
+
+        console.log('active!')
+
+        var active_list = $( "#sample-table" ).find( ".active" );
+
+        var sample_pks = [];
+
+        console.log(active_list)
+
+        for(var i=0; i < active_list.length; i++){
+
+            sample_pks.push($(active_list[i]).find('.sample-pk').html());
+
+        }
+
+        console.log(sample_pks)
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/export-samples',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                sample_pks:  JSON.stringify(sample_pks),
+            },
+            success: function(data){
+
+                //window.location.href = '/view-files/';
+                console.log('success')
+                alert('Samples scheduled for export. Please check the file page')
+
+            },
+            error: function(data){
+
+                console.log('it errors');
+            }
+        });
+
+    });
+
+    // DELETE MODAL
+
+    $(document).on('click','.delete-samples',function(ev){
+
+        var active_list = $( "#sample-table" ).find( ".active" );
+
+        $('#delete-samples-counter').html(active_list.length + " samples marked for delete");
+
+    });
+
+    $(document).on('click','#submit-sample-delete',function(ev) {
+
+        ev.preventDefault();
+
+        var disposal_route = $('#disposal-dropdown').attr('selected','selected').val();
+
+        if (disposal_route == 'none'){
+            $('#error-protocol-group').addClass('has-error');
+        } else{
+            $('#error-protocol-group').removeClass('has-error');
+
+            // delete
+
+            var active_list = $( "#sample-table" ).find( ".active" );
+
+            var sample_pks = [];
+
+            console.log(active_list)
+
+            for(var i=0; i < active_list.length; i++){
+
+                sample_pks.push($(active_list[i]).find('.sample-pk').html());
+
+            }
+
+            console.log(sample_pks)
+
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/delete-samples',
+                data: {
+                    csrfmiddlewaretoken:'{{ csrf_token }}',
+                    disposal_route: disposal_route,
+                    sample_pks:  JSON.stringify(sample_pks),
+                },
+                success: function(data){
+
+                    //window.location.href = '/view-files/';
+                    console.log('success');
+                    alert("Samples deleted");
+                    $('#delete-samples').modal('hide');
+
+                    $.LoadingOverlay("show");
+                    filter_samples_by_project_and_study(getParameterByName('project_id'),$('#study-dropdown').val());
+                    $.LoadingOverlay("hide");
+
+                },
+                error: function(data){
+
+                    console.log('it errors');
+                }
+            });
+
+        }
+
+    });
+
+
+
+    // UPLOAD MODAL
+
+    // Upload modal submit button
+    $(document).on('click','#upload-excel',function(ev) {
+
+        ev.preventDefault();
+
+        var file = $('#file-upload-input')[0].files[0];
+
+        var project_id = $('#modal-dropdown').attr('selected','selected').val();
+
+        var fail = false;
+
+        if(project_id == 'none'){
+            $('#error-project-group').addClass('has-error');
+            fail = true;
+        } else {
+            $('#error-project-group').removeClass('has-error');
+        }
+
+        if(!file){
+            $('#error-file-group').addClass('has-error');
+            fail = true;
+        } else {
+            $('#error-file-group').removeClass('has-error');
+        }
+        if (!fail){
+
+            var upload = new Upload(file,project_id);
+            upload.doUpload();
+
+        }
+
+
+    });
+
+    $("#file-upload-input").on("change", function (e) {
+
+        $(this).removeClass('btn-warning');
+        $(this).addClass('btn-success');
+        $('#upload-excel').removeAttr("disabled");
+
+    });
+
+    // Upload class for uploading excel files by ajax
+    var Upload = function (file,project_id) {
+        this.file = file;
+        this.project_id = project_id;
+    };
+
+    Upload.prototype.getType = function() {
+        return this.file.type;
+    };
+    Upload.prototype.getSize = function() {
+        return this.file.size;
+    };
+    Upload.prototype.getName = function() {
+        return this.file.name;
+    };
+    Upload.prototype.doUpload = function () {
+        var that = this;
+        var formData = new FormData();
+
+        // add assoc key values, this will be posts values
+        formData.append("file", this.file, this.getName());
+        formData.append("upload_file", true);
+        formData.append("csrfmiddlewaretoken", '{{ csrf_token }}');
+        formData.append("project_id", this.project_id);
+
+        $('#upload-excel').attr("disabled", "disabled");
+
+        $.ajax({
+            type: "POST",
+            url: "/ajax/submit-file-upload/",
+            xhr: function () {
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) {
+                    myXhr.upload.addEventListener('progress', that.progressHandling, false);
+                }
+                return myXhr;
+            },
+            success: function (data) {
+                // your callback here
+                console.log(data);
+                console.log("file upload")
+                $("#upload-progress-bar").css("width", "100%");
+                $("#upload-progress-bar").removeClass("progress-bar-danger");
+                $("#upload-progress-bar").removeClass("progress-bar-primary");
+                $("#upload-progress-bar").addClass("progress-bar-success");
+                $(".upload-status").html("File uploaded. <a href='/pending-commits'>Please check pending commits</a>");
+                $('#upload-excel').removeAttr("disabled");
+            },
+            error: function (error) {
+                // handle error
+                console.log(error);
+                $("#upload-progress-bar").css("width", "100%");
+                $("#upload-progress-bar").removeClass("progress-bar-primary");
+                $("#upload-progress-bar").addClass("progress-bar-danger");
+                $(".upload-status").text("Failed");
+            },
+            async: true,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            timeout: 60000
+        });
+    };
+
+    Upload.prototype.progressHandling = function (event) {
+        var percent = 0;
+        var position = event.loaded || event.position;
+        var total = event.total;
+        if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+        }
+        // update progressbars classes so it fits your code
+        $("#upload-progress-bar").css("width", +percent + "%");
+        $(".upload-status").text(percent + "%");
+    };
+
+</script>
+
+{% endblock %}

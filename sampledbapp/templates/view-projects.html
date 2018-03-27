@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 page-header">
+        <div class="col-lg-3">
+            <h3>Projects </h3>
+           <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+        </div>
+        <div class="col-lg-8">
+            <p class="lead"><i class="fa fa-flash fa-fw"></i>Create a new project or edit an existing one</p>
+        </div>
+        <div class="col-lg-1">
+
+            <a href="/edit-project/"><button class="btn btn-success">New project</button></a>
+        </div>
+
+    </div>
+    <!--
+    <div class="col-lg-6">
+        <p class="lead page-header">Create a new project or edit an existing one</p>
+    </div> -->
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <!-- <div class="panel-heading">
+                Project list
+            </div> -->
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Group</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>P Code</th>
+                            <th>Date created</th>
+                            <th>Edit</th>
+                            <th>View Samples</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for project in projects %}
+                            <tr>
+                                <td>{{ project.id }}</td>
+                                <td>{{ project.group.name }}</td>
+                                <td>{{ project.title }}</td>
+                                <td>{{ project.description }}</td>
+                                <td>{{ project.p_code }}</td>
+                                <td>{{ project.datetime_created }}</td>
+
+                                <td><a class="btn btn-primary" href="/edit-project/?project_id={{ project.id }}">Edit</a></td>
+                            <!--    <td><a class="btn btn-success" href="/view-files/?project_id={{ project.id }}">Files</a></td> -->
+                                <td><a class="btn btn-success" href="/view-samples/?project_id={{ project.id }}">Samples</a></td>
+                                <!--
+                                <td><a class="btn btn-primary" href="/admin/sampledbapp/project/{{ project.pk }}/change/">Edit</a></td>
+                                -->
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="row">
+            <div class="col-lg-10 page-header">
+                <div class="col-lg-3">
+                    <h3>Pending changes</h3>
+                    <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+                </div>
+                <div class="col-lg-5">
+                    <p class="lead"><i class="fa fa-flash fa-fw"></i>Check, correct, resubmit, and commit your changes</p>
+                </div>
+                <div class="col-lg-4">
+                    {% if staging.status == 2 %}
+                        <button type="submit" class="btn btn-success check-changes">Resubmit for validation</button>
+                    {% elif staging.status == 3 %}
+                        <button type="submit" class="btn btn-danger commit-changes">Commit changes</button>
+                    {% endif %}
+                    <button type="submit" class="btn btn-warning cancel-commit">Delete pending commit</button>
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row" id="file-success-row" style="display:none;">
+            <div class="col-sm-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4>File validation Passed!.</h4>
+                    </div>
+                    <div class="panel-body" id="file-success-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="file-failure-row" style="display:none;">
+            <div class="col-sm-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4>File validation failed. Please correct errors and reupload.</h4>
+                    </div>
+                    <div class="panel-body" id="file-failure-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="not-unique-row" style="display:none;">
+            <div class="col-sm-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4>The following samples are not unique per study</h4>
+                    </div>
+                    <div class="panel-body" id="not-unique-row-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="failure-row" style="display:none;">
+            <div class="col-sm-12">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h4>Field validation failed. Please correct fields inline and resubmit, or correct fields in file and reupload</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="json_dump"></div>
+
+                        <div class="table-responsive">
+                            <table style="table-layout: fixed; width: 100%" id="failure-table" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Study title</th>
+                                    <th>Sample ID</th>
+                                    <th>Species</th>
+                                    <th>Sample storage type</th>
+                                    <!-- <th class="rotate">Sample storage type</th> -->
+                                    <th>Sample matrix</th>
+                                    <th>Collection protocol</th>
+                                    <th>Campus</th>
+                                    <th>Building</th>
+                                    <th>Room</th>
+                                    <th>Freezer ID</th>
+                                    <th>Shelf ID</th>
+                                    <th>Box ID</th>
+                                    <th>Parent type</th>
+                                    <th>Parent ID</th>
+                                    <th>Consent form information</th>
+                                    <th>Tissue bank reference</th>
+                                    <th>Hazard group</th>
+                                    <th>Hazard description</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tab-rows">
+                                {% for sample in samples %}
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+               <!-- <div class="panel-footer">
+                    <button type="submit" class="btn btn-success btn-xs check-changes">Resubmit validation</button>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="row" id="success-row" style="display:none;">
+            <div class="col-sm-12">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h4>Field validation passed. Please check entries are as expected.</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="json_dump"></div>
+
+                        <div class="table-responsive">
+                            <table id="success-table" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Study title</th>
+                                    <th>Sample ID</th>
+                                    <th>Species</th>
+                                    <th>Sample storage type</th>
+                                    <th>Sample matrix</th>
+                                    <th>Collection protocol</th>
+                                    <th>Campus</th>
+                                    <th>Building</th>
+                                    <th>Room</th>
+                                    <th>Freezer ID</th>
+                                    <th>Shelf ID</th>
+                                    <th>Box ID</th>
+                                    <th>Parent type</th>
+                                    <th>Parent ID</th>
+                                    <th>Consent form information</th>
+                                    <th>Tissue bank reference</th>
+                                    <th>Hazard group</th>
+                                    <th>Hazard description</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tab-rows">
+                                {% for sample in samples %}
+
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        field_validation = '{{ staging.field_validation }}'.replace(/&quot;/g,'"');
+        file_validation = '{{ staging.file_validation }}'.replace(/&quot;/g,'"');
+
+        var file_name = '{{ staging.file }}';
+
+        console.log("filename: ")
+        console.log(file_name)
+
+
+        if(file_validation.length != 0){
+            jsoned_file_validation = JSON.parse(file_validation);
+
+            if(Object.keys(jsoned_file_validation).length > 0){
+
+                //$('#failure-table #tab-rows').html(build_failure_rows(staging_json,field_validation));
+                build_file_info(file_name,jsoned_file_validation);
+                //$('#file-failure-body').html(html);
+                //$('#file-failure-row').show();
+            }
+        }
+
+        if(field_validation.length != 0) {
+
+            staging_json = '{{ staging_json }}'.replace(/&quot;/g, '"');
+            staging_json = JSON.parse(staging_json);
+            jsoned_field_validation = JSON.parse(field_validation);
+
+           // if (jsoned_field_validation.non_unique_samples.length > 0) {
+
+           //     build_non_unique_content(jsoned_field_validation.non_unique_samples);
+
+           // }
+
+            if (Object.keys(jsoned_field_validation.failed_samples).length > 0) {
+
+                field_validation = '{{ staging.field_validation }}';
+                //$('#failure-table #tab-rows').html(build_failure_rows(staging_json,field_validation));
+                html = build_failure_rows(staging_json, jsoned_field_validation);
+                $('#failure-table #tab-rows').html(html);
+                $('#failure-row').show();
+            }
+
+
+            if (jsoned_field_validation.passed_samples.length > 0) {
+                $('#success-table #tab-rows').html(build_success_rows(staging_json, jsoned_field_validation));
+                $('#success-row').show();
+            }
+        }
+    });
+
+    $(document).on('click','.cancel-commit',function(ev) {
+
+        ev.preventDefault();
+
+        var staging_id = window.location.search.substr(12);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/delete-staging-object',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                staging_id: staging_id,
+            },
+            success: function(data){
+
+                window.location.href = '/pending-commits/'
+
+            },
+            error: function(data){
+
+                console.log('it errors');
+            }
+        });
+
+    });
+
+    $(document).on('click','.commit-changes',function(ev) {
+
+        ev.preventDefault();
+
+        var staging_id = window.location.search.substr(12);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/commit-staging-samples',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                staging_id: staging_id,
+            },
+            success: function(data){
+
+                window.location.href = '/pending-commits/'
+
+            },
+            error: function(data){
+
+                console.log('it errors');
+            }
+        });
+
+    });
+
+    $(document).on('click','.check-changes',function(ev) {
+
+        ev.preventDefault();
+
+        var form_data = $('#failure-table').find(':input.failed-samples').serialize();
+
+        var edited_pks = $('.edited-pks').serialize();
+
+        var staging_id = window.location.search.substr(12);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/recommit-staging-samples',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                staging_id: staging_id,
+                form_data: form_data,
+                edited_pks: edited_pks
+            },
+            success: function(data){
+
+                window.location.href = '/pending-commits/'
+
+            },
+            error: function(data){
+
+                console.log('it errors');
+            }
+        });
+
+    });
+
+    function build_file_error_html(file_name,file_validation){
+
+        html = "Filename: " + file_name;
+
+        html = html + "<br />Warnings: ";
+
+        for(var i = 0; i < file_validation.warnings.length; i++){
+            html = html + "<br />" + file_validation.warnings[i]
+        }
+
+        html = html + "<br />Errors: ";
+
+        for(var i = 0; i < file_validation.errors.length; i++){
+            html = html + "<br />" + file_validation.errors[i]
+        }
+
+        $('#file-failure-body').html(html);
+        $('#file-failure-row').show();
+
+        $('.check-changes').attr('disabled','disabled');
+
+
+
+    }
+
+    function build_file_success_html(file_name,file_validation){
+
+        html = "Filename: " + file_name;
+
+        html = html + "<br />Warnings: ";
+
+        for(var i = 0; i < file_validation.warnings.length; i++){
+            html = html + "<br />" + file_validation.warnings[i]
+        }
+
+        $('#file-success-body').html(html);
+        $('#file-success-row').show();
+
+    }
+
+    function build_file_info(file_name,file_validation){
+
+        if (file_validation.errors.length > 0){
+
+            build_file_error_html(file_name,file_validation);
+
+        } else {
+
+            build_file_success_html(file_name,file_validation);
+
+        }
+
+        return html;
+    }
+
+    function build_non_unique_content(non_unique_samples){
+
+        html = "Non unique samples: ";
+
+        for(i=0;i<non_unique_samples.length;i++){
+
+            html = html + "<br />" + non_unique_samples[i]
+
+        }
+
+        $('#file-success-body').html(html);
+        $('#file-success-row').show();
+
+    }
+
+    function build_failed_sample_cell(html,staging_object,field_validation,row_id,field_name) {
+
+        failed_sample = field_validation.failed_samples[row_id];
+        edited_sample_fields = field_validation.edited_fields[row_id];
+
+        if (field_name in failed_sample) {
+            html = html + "<td style='width:100%;word-wrap: break-word' class='danger'><input type='text' class='failed-samples' name='" + field_name + "-" + row_id + "' value='" + staging_object[field_name] + "'/><br /><i>" + failed_sample[field_name] + "</i></td>";
+
+        } else if (edited_sample_fields.indexOf(field_name) >= 0) {
+            html = html + "<td style='width:100%;word-wrap: break-word' class='success'><i>" + staging_object[field_name] + "</i></td>";
+
+        } else {
+            html = html + "<td style='width:100%;word-wrap: break-word'>" + staging_object[field_name] + "</td>";
+        }
+
+        return html;
+
+    }
+
+    function build_failure_rows(staging_json,field_validation){
+
+        html =  '';
+
+        console.log(field_validation.failed_samples);
+
+        //for(var i = 0; i < staging_json.edited_pks.length; i++){
+
+        for(row_id in field_validation.failed_samples){
+
+            html = html + "<tr>";
+            html = html + "<td>" + row_id + "</td>";
+
+            staging_object = staging_json.objects[row_id];
+
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'study_title');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'sample_id');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'species');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'sample_storage_type');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'sample_matrix');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'collection_protocol');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'campus');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'building');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'room');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'freezer_id');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'shelf_id');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'box_id');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'parent_type');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'parent_id');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'consent_form_information');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'tissue_bank_reference');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'hazard_group');
+            html = build_failed_sample_cell(html,staging_object,field_validation,row_id,'hazard_description');
+
+            html = html + '<input type="hidden" class="edited-pks" name="edited_pks[]" value="' + row_id + '" /></tr>';
+
+        }
+
+        return html;
+    }
+
+    function build_success_sample_cell(html,staging_object,field_validation,row_id,field_name){
+
+        edited_sample_fields = field_validation.edited_fields[row_id];
+
+        if (edited_sample_fields.indexOf(field_name) >= 0) {
+            console.log('found it')
+            html = html + "<td class='success'><i>" + staging_object[field_name] + "</i></td>";
+        } else {
+            console.log('not found it')
+            html = html + "<td>" + staging_object[field_name] + "</td>";
+        }
+
+        return html;
+    }
+
+    function build_success_rows(staging_json,field_validation){
+
+        html =  '';
+
+        for(var i = 0; i < field_validation.passed_samples.length; i++){
+
+            row_id = field_validation.passed_samples[i];
+
+            staging_object = staging_json.objects[row_id];
+
+            html = html + "<tr>";
+            html = html + "<td>" + row_id + "</td>";
+
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'study_title');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'sample_id');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'species');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'sample_storage_type');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'sample_matrix');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'collection_protocol');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'campus');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'building');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'room');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'freezer_id');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'shelf_id');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'box_id');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'parent_type');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'parent_id');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'consent_form_information');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'tissue_bank_reference');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'hazard_group');
+            html = build_success_sample_cell(html,staging_object,field_validation,row_id,'hazard_description');
+
+            html = html + "</tr>";
+
+        }
+
+        return html
+    }
+
+</script>
+{% endblock %}

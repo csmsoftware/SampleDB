@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="row">
+            <div class="visible-lg visible-md visible-sm visible-xs">
+                <div class="col-lg-8 col-md-8 page-header">
+
+                    <div class="col-lg-5 col-md-5">
+                        <h3>Pending database changes</h3>
+                        <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <p class="lead"><i class="fa fa-flash fa-fw"></i>Browse and action the changes</p>
+                    </div>
+                    <div class="col-lg-1 col-md-1">
+                        <div class="visible-md visible-lg">
+                            <ul class="nav nav-pills">
+                                <li class="clear-all btn btn-danger">Clear all</li>
+                            </ul>
+                        </div>
+                        <div class="visible-sm visible-xs">
+                            <ul class="nav nav-pills pull-right">
+                                <li class="clear-all btn btn-danger">Clear all</li>
+                            </ul>
+                            <br />&nbsp;
+        
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+     <!--       <div class="visible-sm visible-xs">
+                <div class="col-sm-12 col-xs-12 page-header">
+
+                    <div class="col-sm-6 col-xs-6">
+                        <h4>Pending database changes</h4>
+                        <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+                 <!--   </div>
+                    <div class="col-sm-6 col-xs-6">
+                        <p><i class="fa fa-flash fa-fw"></i>Browse and action the changes</p>
+                    </div>
+                    <div class="col-sm-12 col-xs-12">
+                        <ul class="nav nav-pills pull-right">
+                            <li class="clear-all btn btn-danger">Clear all</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+-->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div id="staging-container"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    $(document).ready(function(ev) {
+
+        update_pending();
+
+    });
+
+    // Poll the get-user-jobs ajax view and build/update the task list.
+    // Every 20 seconds
+    function update_pending(){
+
+        //console.log("updating tasks")
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get-pending-commits',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(data){
+
+                update_pending_commit_html(data);
+
+            },
+            error: function(data){
+
+                console.log('ajax/get-pending-commits error');
+            }
+
+        });
+
+        // Turn this on for updates
+        //setTimeout(update_all_task_list,20000);
+
+    }
+
+    // Loop over the returned job list and build the HTML
+    function update_pending_commit_html(data){
+
+        for(i=0;i<data.length;i++) {
+
+            staging = data[i];
+
+            // Loop over the tasks.
+            // If the task is not new, check the status and update.
+            // If it is new, add it to the top.
+
+            if ($("#staging-" + staging.pk ).length == 0){
+
+                html = create_staging_html(staging);
+                $("#staging-container").prepend(html);
+
+            } else {
+
+                html = create_task_html(staging);
+                $("#staging-" + staging.pk).html(html);
+            }
+
+        }
+
+    }
+
+    // Create the task list html based on job status
+    function create_staging_html(staging){
+
+        //console.log(task.fields)
+
+        if (staging.fields.status == 1) {
+            status_string = 'Pending';
+            panel_type = 'panel-warning';
+            date_info = 'Created: ' + staging.fields.datetime_added;
+           // text_to_show = '<span class="pull-right">Please wait while the system checks your changes</span>';
+            text_to_show = '';
+
+        } else if (staging.fields.status == 2) {
+            status_string = 'Validation error';
+            panel_type = 'panel-danger';
+            date_info = 'Created: ' + staging.fields.datetime_added + '<br /> Checked: ' + staging.fields.datetime_checked + '<br />';
+
+            date_info = date_info + 'Errors: ';
+            if (staging.hasOwnProperty("field_validation")) {
+            //if ('failed_samples' in staging.field_validation) {
+                date_info = date_info + length(staging.field_validation['failed_samples']) + '/' + (length(staging.field_validation['failed_samples']) + length(staging.field_validation['passed_samples'])) + ' ';
+            }
+
+            text_to_show = '<span class="pull-right"><a href="/view-commit/?staging_id=' + staging.pk + '"><button type="button" class="btn btn-success">Resolve errors and commit</button></a></span>';
+
+        } else if (staging.fields.status == 3) {
+            status_string = 'Ready to commit';
+            panel_type = 'panel-info';
+            date_info = 'Created: ' + staging.fields.datetime_added + '<br /> Checked: ' + staging.fields.datetime_checked;
+            text_to_show = '<span class="pull-right"><a href="/view-commit/?staging_id=' + staging.pk + '"><button type="button" class="btn btn-success">View and commit</button></a></span>';
+
+        } else if (staging.fields.status == 4) {
+            status_string = 'Changes committed';
+            panel_type = 'panel-success';
+            date_info = 'Created: ' + staging.fields.datetime_added + '<br /> Checked: ' + staging.fields.datetime_checked+ '<br /> Committed: ' + staging.fields.datetime_committed;
+            text_to_show = '';
+        }
+
+
+        //html = '<div id="task-' + staging.fields.job.id + '"><div id="staging-' + staging.pk + '" class="col-md-6 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-lg-12">';
+        html = '<div id="staging-' + staging.pk + '" class="col-md-6 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-xs-6">';
+        html = html + '<strong>Staging commit id: ' + staging.pk + ' - ' + staging.fields.type;
+
+       // if (staging.fields.project) {
+        //    html = html + staging.fields.project.name;
+       // }
+        html = html + '</strong></div> <div class="col-xs-6 text-right">';
+        html = html + '<div>' + status_string + '</div></div> </div> </div><div class="panel-footer">';
+        html = html + '<span class="pull-left">' + date_info +'</span>';
+
+
+
+        // html = html + '<a data-toggle="collapse" data-parent="task-' + staging.pk + '" href="#collapse-' + staging.pk + '">';
+
+
+        html = html + text_to_show;
+
+        //<span class="pull-right">More info <i class="fa fa-arrow-circle-right"></i>';
+
+        html = html + '<div class="clearfix"></div>';
+
+       // html = html + '<div id="collapse-' + staging.pk + '" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;"><div class="panel-body">'
+
+       // html = html + text_to_show;
+
+       // html = html + '</div></div>';
+
+
+        //html = html + '</div> </a> </div> </div></div>';
+        html = html + '</div> </div> </div>';
+
+        return html
+    }
+
+    $(document).on('click','.clear-all',function(ev) {
+
+        ev.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/clear-all-non-completed-staging-tasks/',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+            },
+            success: function(data){
+
+                window.location.href = '/pending-commits/';
+
+            },
+            error: function(data){
+
+                console.log('Error: /ajax/clear-all-non-completed-staging-tasks/');
+            }
+        });
+
+
+    });
+
+
+</script>
+
+
+{% endblock %}

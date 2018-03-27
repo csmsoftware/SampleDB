@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Confirm sample changes</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div id="json_dump"></div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Study title</th>
+                            <th>Sample ID</th>
+                            <th>Species</th>
+                            <th>Sample storage type</th>
+                            <th>Sample matrix</th>
+                            <th>Collection protocol</th>
+                            <th>Campus</th>
+                            <th>Building</th>
+                            <th>Room</th>
+                            <th>Freezer ID</th>
+                            <th>Shelf ID</th>
+                            <th>Box ID</th>
+                            <th>Parent type</th>
+                            <th>Parent ID</th>
+                            <th>Consent form information</th>
+                            <th>Tissue bank reference</th>
+                            <th>Hazard group</th>
+                            <th>Hazard description</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tab-rows">
+                        {% for sample in samples %}
+
+                        {% endfor %}
+                        </tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+            <div class="panel-footer">
+                <button type="submit" id="commit-changes" class="btn btn-danger btn-lg">Commit changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.row -->
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        data = '{{ staging_json }}';
+
+        var staging_json = JSON.parse(data.replace(/&quot;/g,'"'));
+
+        console.log(staging_json);
+
+        $('#tab-rows').html(build_rows(staging_json))
+
+    });
+
+    $(document).on('click','#commit-changes',function(ev) {
+
+        ev.preventDefault();
+
+        var staging_id = window.location.search.substr(12);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/commit-staging-samples',
+            data: {
+                csrfmiddlewaretoken:'{{ csrf_token }}',
+                staging_id: staging_id,
+            },
+            success: function(data){
+
+               //window.location.href = '/view-samples/'
+
+            },
+            error: function(data){
+
+                console.log('it errors');
+            }
+        });
+
+
+    });
+
+
+
+    function build_rows(staging_json){
+
+        console.log(staging_json);
+
+        html =  '';
+
+        for(var i = 0; i < staging_json.edited_pks.length; i++){
+
+            pk = staging_json.edited_pks[i];
+
+            staging_object = staging_json.objects[pk]
+
+            html = html + "<tr>";
+            html = html + "<td>" + pk + "</td>";
+            html = html + "<td>" + staging_object.study_title + "</td>";
+            html = html + "<td>" + staging_object.sample_id + "</td>";
+            html = html + "<td>" + staging_object.species + "</td>";
+            html = html + "<td>" + staging_object.sample_storage_type + "</td>";
+            html = html + "<td>" + staging_object.sample_matrix + "</td>";
+            html = html + "<td>" + staging_object.collection_protocol + "</td>";
+            html = html + "<td>" + staging_object.campus + "</td>";
+            html = html + "<td>" + staging_object.building + "</td>";
+            html = html + "<td>" + staging_object.room + "</td>";
+            html = html + "<td>" + staging_object.freezer_id + "</td>";
+            html = html + "<td>" + staging_object.shelf_id + "</td>";
+            html = html + "<td>" + staging_object.box_id + "</td>";
+            html = html + "<td>" + staging_object.parent_type + "</td>";
+            html = html + "<td>" + staging_object.parent_id + "</td>";
+            html = html + "<td>" + staging_object.consent_form_information + "</td>";
+            html = html + "<td>" + staging_object.tissue_bank_reference + "</td>";
+            html = html + "<td>" + staging_object.hazard_group + "</td>";
+            html = html + "<td>" + staging_object.hazard_description + "</td>";
+            html = html + "</tr>";
+
+        }
+
+        return html
+    }
+
+</script>
+{% endblock %}

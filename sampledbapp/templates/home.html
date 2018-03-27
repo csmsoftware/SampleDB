@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1>Welcome to the CSM LIMS</h1>
+            <h2>You are now logged in.</h2> -->
+
+            <div class="row page-header">
+                <h3><img width="175px;" src="/static/img/sampledb-logo-big.png"> Welcome to SampleDB</h3>
+                <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="row">
+                <div class="panel">
+                    <div class="panel-body">
+                        <p class="lead">To get started:
+                        <ol>
+                            <li><a href="/view-projects/">Configure a project. <i class="fa fa-sitemap fa-fw"></i></a></li>
+                            <li><a href="/view-samples/">View, edit, import and export your samples. <i class="fa fa-table fa-fw"></i></a></li>
+                            <li><a href="/view-files/">View your imported and exported files. <i class="fa fa-file fa-fw"></i></a></li>
+                            <li><a href="/pending-commits/">Validate, correct, and confirm your changes prior to commit. <i class="fa fa fa-wrench fa-fw"></i></a></li>
+                            <li>Check you notifications in the top right. <i class="fa fa fa-bell fa-fw"></i></a></li>
+                            <li><a href="/view-tasks/">Check your task progress here and in the top right. <i class="fa fa fa-tasks fa-fw"></i></a></li>
+                        </ol>
+                        <hr />
+                        </p>
+                        <p class="lead">Finding existing samples:
+                        <ul>
+                            <li>Use the <a href="/view-samples/">Project samples <i class="fa fa-table fa-fw"></i></a> to view, edit and export samples by project.</li>
+                            <li>Use the <a href="/search-samples/">Audit search <i class="fa fa fa-search fa-fw"></i></a> to search samples by Sample ID, Freezer, Box, or Tissue Bank Reference. <i>You must be an Auditor to view this page</i>.</li>
+                        </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="row">
+                <div class="panel">
+                    <div class="panel-body">
+                        <p class="lead">General info:</p>
+                        <ul>
+                            <li>Each Project Lead has a Group with various Projects.</li>
+                            <li>Samples are grouped into Projects.</li>
+                            <li>Each sample is linked to a Project and Study</li>
+                            <li>Sample IDs must be unique per study.</li>
+                            <li>Samples can be downloaded to excel.</li>
+                            <li>Excel files with new and edited samples can be uploaded.</li>
+                            <li>Edited excel files must contain the pk field (primary key). This is used for identify which sample you editing.</li>
+                            <li>Changes to the DB are validated prior to committing. Failures must be manually edited and resubmitted.</li>
+                            <li>Export, import, and validation checks are run offline as Tasks.</li>
+                            <li>User management, including assigning users to groups, is managed in the <a href="/admin/">admin interface</a></li>
+                            <li>If you require access to a project, please contact the PI responsible.</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

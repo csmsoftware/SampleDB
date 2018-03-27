@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="row">
+            <div class="col-lg-6 page-header">
+                <div class="col-lg-3">
+                    <h3>Tasks </h3>
+                    <!-- <a href="/admin/sampledbapp/project/add/"><button class="btn btn-success">New project</button> -->
+                </div>
+                <div class="col-lg-8">
+                    <p class="lead"><i class="fa fa-flash fa-fw"></i>View and action your tasks</p>
+                </div>
+                <div class="col-lg-1">
+                    &nbsp;
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div id="task-container"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+    $(document).ready(function(ev) {
+
+        update_all_task_list();
+
+    });
+
+    // Poll the get-user-jobs ajax view and build/update the task list.
+    // Every 20 seconds
+    function update_all_task_list(){
+
+        //console.log("updating tasks")
+
+        $.ajax({
+            type: 'POST',
+            url: '/ajax/get-user-jobs',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                days: 600,
+            },
+            success: function(data){
+
+                console.log(data)
+
+                update_all_task_list_html(data);
+
+            },
+            error: function(data){
+
+                console.log('ajax/get-user-jobs error');
+            }
+
+        });
+
+        // Turn this on for updates
+        //setTimeout(update_all_task_list,20000);
+
+    }
+
+    // Loop over the returned job list and build the HTML
+    function update_all_task_list_html(data){
+
+        for(i=0;i<data.length;i++) {
+
+            task = data[i];
+
+            // Loop over the tasks.
+            // If the task is not new, check the status and update.
+            // If it is new, add it to the top.
+
+            if ($("#task-" + task.pk ).length == 0){
+
+                html = create_task_html(task);
+                $("#task-container").prepend(html);
+
+            } else {
+
+                html = create_task_html(task);
+                $("#task-" + task.pk).html(html);
+            }
+
+        }
+
+    }
+
+    // Create the task list html based on job status
+    function create_task_html(task){
+
+        //console.log(task.fields)
+
+        if (task.fields.status == 1) {
+            status_string = 'Pending';
+            panel_type = 'panel-warning';
+            date_info = 'Created: ' + task.fields.datetime_created;
+
+        } else if (task.fields.status == 2) {
+            status_string = 'In progress';
+            panel_type = 'panel-info';
+            date_info = 'Created: ' + task.fields.datetime_created + '<br /> Run: ' + task.fields.datetime_run;
+
+        } else if (task.fields.status == 3) {
+            status_string = 'Failed';
+            panel_type = 'panel-danger';
+            date_info = 'Created: ' + task.fields.datetime_created + '<br /> Run: ' + task.fields.datetime_run + '<br /> Failed: ' + task.fields.datetime_failed;
+
+        } else if (task.fields.status == 4) {
+            status_string = 'Completed';
+            panel_type = 'panel-success';
+            date_info = 'Created: ' + task.fields.datetime_created + '<br /> Run: ' + task.fields.datetime_run + '<br /> Completed: ' + task.fields.datetime_completed;
+
+        }
+
+        html = '<div id="task-' + task.pk + '" class="col-md-6 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-lg-12">';
+        html = html + '<strong>' + task.pk + ' ' + task.fields.job_type + '</strong></div> <div class="col-lg-12 text-right">';
+        html = html + '<div>' + status_string + '</div></div> </div> </div> <div class="panel-footer">';
+        html = html + '<span class="pull-left">' + date_info +'</span>';
+        html = html + '<span class="pull-right"><a data-toggle="collapse" data-parent="task-' + task.pk + '" href="#collapse-' + task.pk + '">More info <i class="fa fa-arrow-circle-right"></i></a>';
+
+        if (task.fields.job_type == 'check_staging_samples' && task.fields.status == 4){
+            html = html + '<br /><br /><a href="/pending-commits/#task-' + task.pk + '" ><button type="button" class="btn btn-success btn-xs">Review & commit</button></a>'
+        }
+
+        if (task.fields.status == 3){
+            html = html + '<br /><br /><button disabled id="rerun-' + task.pk + '" type="button" class="btn btn-success btn-xs">Copy and rerun job</button>'
+        }
+
+        html = html + '</span><div class="clearfix"></div>';
+
+        html = html + '<div id="collapse-' + task.pk + '" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;"><div class="panel-body">'
+
+        html = html + task.fields.text_to_show;
+
+        html = html + '</div></div>';
+
+        html = html + '</div> </div> </div>';
+
+        return html
+    }
+
+</script>
+
+{% endblock %}

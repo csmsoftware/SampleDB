@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-lg-12">
+                {% if not project_to_edit %}
+                <h1 class="page-header">Add a project</h1>
+                {% else %}
+                <h1 class="page-header">Edit project {{ project_to_edit.id }}</h1>
+                {% endif %}
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Project fields
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                {% if not project_to_edit %}
+
+                                <form role="form" method="post" action="#" id="project-form">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label class="control-label" for="title">Title</label>
+                                        <input id="title" name="title" class="form-control" placeholder="Enter project title" />
+                                        <div class="form-error" id="error-title"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="description">Description</label>
+                                        <textarea id="description" name="description" class="form-control" placeholder="Enter project description" ></textarea>
+                                        <div class="form-error" id="error-description"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="group">Principle Investigator</label>
+
+                                        <select id="group" name="group_id" class="form-control">
+                                            <option value="">Select</option>
+
+                                            {% for group in groups %}
+                                            <option value="{{ group.id }}">{{ group.name }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <div class="form-error" id="error-group"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="p_code">P code</label>
+                                        <input id="p_code" name="p_code" class="form-control" placeholder="Enter the P code">
+                                        <div class="form-error" id="error-p_code"></div>
+                                    </div>
+                                    <span class="pull-right">
+                                        <button type="reset" class="btn btn-warning">Reset</button> &nbsp;&nbsp;&nbsp;
+                                        <button type="submit" class="btn btn-success save-project">Submit</button>
+                                    </span>
+                                </form>
+
+                                {% else %}
+
+                                <form role="form" method="post" action="/save-project" id="project-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="project_id" value="{{ project_to_edit.id }}">
+                                    <div class="form-group">
+                                        <label class="control-label" for="title">Title</label>
+                                        <input id="title" name="title" class="form-control" placeholder="Enter project title" value="{{ project_to_edit.title }}">
+                                        <div class="form-error" id="error-title"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="description">Description</label>
+                                        <textarea id="description" name="description" class="form-control" placeholder="Enter project description" >{{ project_to_edit.description }}</textarea>
+                                        <div class="form-error" id="error-description"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="group">Principle Investigator</label>
+
+                                        <select id="group" name="group_id" class="form-control">
+                                            <!-- <option value="">Select</option> -->
+                                            {% for group in groups %}
+
+                                            {% if group.id == project_to_edit.group.id %}
+                                                <option value="{{ group.id }}" selected>{{ group.name }}</option>
+
+                                            {% else %}
+                                                <option value="{{ group.id }}">{{ group.name }}</option>
+                                            {% endif %}
+
+                                            {% endfor %}
+                                        </select>
+
+                                        <div class="form-error" id="error-group"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="p_code">P code</label>
+                                        <input id="p_code" name="p_code" class="form-control" placeholder="Enter the P code" value="{{ project_to_edit.p_code }}">
+                                        <div class="form-error" id="error-p_code"></div>
+                                    </div>
+                                    <span class="pull-right"><button type="submit" class="btn btn-success save-project">Submit Changes</button></span>
+                                </form>
+
+
+                                {% endif %}
+                            </div>
+                            <!-- /.col-lg-12 (nested) -->
+                        </div>
+                        <!-- /.row (nested) -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+                <div class="row">
+                    {% if project_to_edit %}
+                        <h4><a href="/admin/sampledbapp/project/{{ project_to_edit.pk }}/change/">Project admin page</a></h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+
+        $(document).on('click','.save-project',function(ev) {
+
+            ev.preventDefault();
+
+            form_data = $(this).closest('form').find(':input').serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/save-project',
+                data: {
+                    csrfmiddlewaretoken:'{{ csrf_token }}',
+                    form_data: form_data,
+                },
+                success: function(data){
+
+                    // If there are errors, loop over them and add them to the DOM
+                    if (data.Error) {
+
+                        //$('.form-group').removeClass('has-error');
+                        // $('.form-error').html('');
+
+                        for (var form_field in data.Error){
+
+                            $('#'+form_field).closest('.form-group').addClass('has-error');
+                            $('#error-'+form_field).html(data.Error[form_field]);
+
+                        }
+                    } else {
+
+                        $('.save-project').removeClass('btn-default');
+                        $('.save-project').addClass('btn-success');
+                        $('#project-form').append("Save successful!");
+
+                    }
+
+                },
+                error: function(data){
+
+                    console.log('it errors');
+                }
+            });
+
+        });
+
+    </script>
+{% endblock %}
