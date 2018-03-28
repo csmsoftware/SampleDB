@@ -63,19 +63,19 @@ class Project(models.Model):
     last_modified = models.DateTimeField('last modified',auto_now=True)
   #  history = HistoricalRecords()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.title)
 
 class Sample(models.Model):
 
-    project = models.ForeignKey(Project,on_delete=models.PROTECT,related_name='samples_project',verbose_name="Project")
-    study_title = models.CharField(max_length=255,null=True,blank=True)
-    sample_id = models.CharField(max_length=255,null=True,blank=True)
+    project = models.ForeignKey(Project,on_delete=models.PROTECT,related_name='samples_project',verbose_name="Project",db_index=True)
+    study_title = models.CharField(max_length=255,null=True,blank=True,db_index=True)
+    sample_id = models.CharField(max_length=255,null=True,blank=True,db_index=True)
     species = models.CharField(max_length=80,null=True,blank=True)
     sample_matrix = models.CharField(max_length=255,null=True,blank=True)
     collection_protocol = models.CharField(max_length=255,null=True,blank=True)
     parent_type = models.CharField(max_length=255,null=True,blank=True)
-    parent_id = models.CharField(max_length=255,null=True,blank=True)
+    parent_id = models.CharField(max_length=255,null=True,blank=True,db_index=True)
     consent_form_information = models.CharField(max_length=255,null=True,blank=True)
     sample_storage_type = models.CharField(max_length=255,null=True,blank=True)
     hazard_group = models.CharField(max_length=1,null=True,blank=True)
@@ -83,21 +83,21 @@ class Sample(models.Model):
     campus = models.CharField(max_length=5,null=True,blank=True,validators=[validate_campuses])
     building = models.CharField(max_length=100,null=True,blank=True)
     room = models.CharField(max_length=100,null=True,blank=True)
-    freezer_id = models.CharField(max_length=20,null=True,blank=True)
+    freezer_id = models.CharField(max_length=20,null=True,blank=True,db_index=True)
     shelf_id = models.CharField(max_length=20,null=True,blank=True)
-    box_id = models.CharField(max_length=20,null=True,blank=True)
-    tissue_bank_reference = models.CharField(max_length=60,null=True,blank=True)
+    box_id = models.CharField(max_length=20,null=True,blank=True,db_index=True)
+    tissue_bank_reference = models.CharField(max_length=60,null=True,blank=True,db_index=True)
     backfill_data_source = models.CharField(max_length=255,null=True,blank=True)
     is_aliquot = models.BooleanField(default=False)
     sample_parent_id = models.CharField(max_length=20,null=True,blank=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False,db_index=True)
     delete_method = models.CharField(max_length=255,null=True,blank=True)
     datetime_created = models.DateTimeField('datetime_created',auto_now_add=True,null=True) # Try and populate from the previous DB.
 #    history = HistoricalRecords()
     last_edited_user = models.ForeignKey(User, on_delete=models.PROTECT,related_name='last_edited_user',null=True)
     last_modified = models.DateTimeField('last modified',auto_now=True,null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %s' % (self.sample_id,self.study_title)
 
     def validate(self,data):

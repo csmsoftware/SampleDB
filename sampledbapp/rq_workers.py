@@ -377,20 +377,21 @@ def validate_sample_file(job_id,staging_id,file_id):
     if len(file_validation['errors']) == 0:
 
         json_output = build_json(ws,header_map,staging_object)
-        json_object = json_output[0]
 
-        sample_check_clash = json_output[1]
+        #json_object = json_output[0]
 
-        if sample_check_clash:
-            file_validation['errors'].append('Edited samples have no PK field and multiple sample ids found in DB')
+        #sample_check_clash = json_output[1]
+
+        #if sample_check_clash:
+        #    file_validation['errors'].append('Edited samples have no PK field and multiple sample ids found in DB')
 
 
-        staging_object.json = json.dumps(json.dumps(json_object))
+        staging_object.json = json.dumps(json.dumps(json_output))
         #staging_object.json = build_json(ws,header_map,staging_object)
         #staging_object.field_validation = check_file_fields(staging_object.json,header_map)
         #validation = check_fields(json_object)
 
-        staging_object.field_validation = check_fields(json_object,staging_object)
+        staging_object.field_validation = check_fields(json_output,staging_object)
 
         val = json.loads(staging_object.field_validation)
 
@@ -456,6 +457,9 @@ def build_json(ws,header_map,staging_object):
             existing_samples =  Sample.objects.filter(pk=sample_fields['pk'],
                                                     project=staging_object.project)
 
+        else:
+            existing_samples = []
+
         # Assume it is a dumb user who is editing entries without pks
       #  else:
 
@@ -488,6 +492,10 @@ def build_json(ws,header_map,staging_object):
             objects["new_"+str(row_pos)] = sample_fields
 
         row_pos = row_pos + 1
+
+    print(edited_pks)
+    print(new_pks)
+    print(objects)
 
     return {'edited_pks':edited_pks,
             'new_pks':new_pks,

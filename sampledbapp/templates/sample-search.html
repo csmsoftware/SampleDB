@@ -136,6 +136,7 @@
                     parent_id:  $('#parent_id_search').val(),
                     tissue_bank_reference:  $('#tissue_bank_reference_search').val()
                 },
+                onLoading: $.LoadingOverlay("show"),
                 success: function(data){
 
                     list_of_visible_samples = JSON.parse(data.samples);
@@ -146,6 +147,7 @@
                     console.log(sample_extras);
                     display_samples_for_audit('#sample-search-table');
                     $('#sample-table').show();
+                    $.LoadingOverlay("hide");
 
                     //alert("Your samples have been sent for staging checks - Check pending commits");
 
