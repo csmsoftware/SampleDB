@@ -497,9 +497,9 @@ def build_json(ws,header_map,staging_object):
 
         row_pos = row_pos + 1
 
-    print(edited_pks)
-    print(new_pks)
-    print(objects)
+   # print(edited_pks)
+   # print(new_pks)
+   # print(objects)
 
     return {'edited_pks':edited_pks,
             'new_pks':new_pks,
