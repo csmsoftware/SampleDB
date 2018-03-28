@@ -195,9 +195,13 @@ def commit_staging_samples(request):
     staging.job = job
     staging.save()
 
-    rq_job = django_rq.enqueue(rq_workers.commit_staging_samples, job.id, staging.id)
+    # INLINE EXECUTION
+    #rq_workers.commit_staging_samples(job.id,staging.id)
 
+    # RQ EXECUTION
+    rq_job = django_rq.enqueue(rq_workers.commit_staging_samples, job.id, staging.id)
     job.rq_id = rq_job.id
+
     job.save()
 
     messages.add_message(request, messages.SUCCESS, "Pending changes job submitted")
@@ -400,11 +404,11 @@ def submit_file_upload(request):
     staging_object.save()
 
     # INLINE EXECUTION
-    #rq_workers.validate_sample_file(job.id,staging_object.id,file.id)
+    rq_workers.validate_sample_file(job.id,staging_object.id,file.id)
 
     # RQ EXECUTION
-    rq_job = django_rq.enqueue(rq_workers.validate_sample_file, job.id,staging_object.id,file.id)
-    job.rq_id = rq_job.id
+    #rq_job = django_rq.enqueue(rq_workers.validate_sample_file, job.id,staging_object.id,file.id)
+    #job.rq_id = rq_job.id
 
     job.save()
 
@@ -474,6 +478,7 @@ def export_samples(request):
     # RQ EXECUTION
     rq_job = django_rq.enqueue(rq_workers.export_to_excel, job.id,request.user,json.loads(request.POST['sample_pks']))
     job.rq_id = rq_job.id
+
     job.save()
 
     messages.add_message(request, messages.SUCCESS, "Sample scheduled for export")

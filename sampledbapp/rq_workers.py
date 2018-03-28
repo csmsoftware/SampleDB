@@ -23,7 +23,7 @@ def commit_staging_samples(job_id,staging_id):
         # ITS NEW!
         if not is_number(row_id):
 
-            sample_object = Sample.objects.create(**sample_fields)
+            sample_object = Sample(**sample_fields)
             sample_object.project = staging_object.project
 
         else:
@@ -353,7 +353,11 @@ def validate_sample_file(job_id,staging_id,file_id):
     # Validate the fields
     wb = openpyxl.load_workbook(staging_object.file.filepath)
 
+    # TODO:
+    # Add the project to the staging_objects
 
+
+    # Staging_
 
     #logger.error( json.dumps(wb.get_sheet_names()))
     #print "HERE--------------------->"
