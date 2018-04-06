@@ -10,13 +10,13 @@ from django.contrib.auth.models import User, Group
 
 # Check if the title already exists
 def validate_project_title(value):
-
-    if len(Project.objects.filter(title=value)) > 0:
-        raise ValidationError('Title already exists')
+    pass
+   # if len(Project.objects.filter(title=value)) > 0:
+   #     raise ValidationError('Title already exists')
 
 # Check if the description is not blank
 def validate_project_description(value):
-    return
+    pass
     #if value == "":
     #    raise ValidationError('Description must not be blank')
 
@@ -53,12 +53,14 @@ def validate_campuses(value):
 class Project(models.Model):
 
 
-    title = models.CharField(max_length=80,validators=[validate_project_title])
+    #title = models.CharField(max_length=80,validators=[validate_project_title])
+    title = models.CharField(max_length=80,unique=True)
     description = models.CharField(max_length=5000,null=True,validators=[validate_project_description])
 
     group = models.ForeignKey(Group,related_name='proj_group',null=True,on_delete=models.PROTECT,validators=[validate_project_group])
 
     p_code = models.CharField(max_length=10,validators=[validate_project_p_code])
+    project_reference_number = models.CharField(max_length=20,null=True,blank=True)
     datetime_created = models.DateTimeField('date created',auto_now_add=True)
     last_modified = models.DateTimeField('last modified',auto_now=True)
   #  history = HistoricalRecords()

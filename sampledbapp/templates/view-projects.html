@@ -40,6 +40,8 @@
                             <th>Title</th>
                             <th>Description</th>
                             <th>P Code</th>
+                            <th>Project Reference Number</th>
+                            <th>Project Reference Number</th>
                             <th>Date created</th>
                             <th>Edit</th>
                             <th>View Samples</th>
@@ -53,6 +55,7 @@
                                 <td>{{ project.title }}</td>
                                 <td>{{ project.description }}</td>
                                 <td>{{ project.p_code }}</td>
+                                <td>{{ project.project_reference_number }}</td>
                                 <td>{{ project.datetime_created }}</td>
 
                                 <td><a class="btn btn-primary" href="/edit-project/?project_id={{ project.id }}">Edit</a></td>

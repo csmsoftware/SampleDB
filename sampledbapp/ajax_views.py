@@ -568,3 +568,18 @@ def delete_samples(request):
 
     return HttpResponse(json.dumps(data), content_type = "application/json")
 
+
+def move_samples_to_project(request):
+
+    samples = Sample.objects.filter(pk__in=json.loads(request.POST['sample_pks']))
+
+    project = Project.objects.get(pk=request.POST['project'])
+
+    for sample in samples:
+
+        sample.project = project
+        sample.save()
+
+    data = {'success':True}
+
+    return HttpResponse(json.dumps(data), content_type = "application/json")

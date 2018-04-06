@@ -66,6 +66,8 @@
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <button type="button" class="btn btn-success upload-excel" data-toggle="modal" data-target="#upload-modal">Upload excel</button>
 
+                            <button type="button" class="btn btn-warning move-project" data-toggle="modal" data-target="#move-project">Move project</button>
+
                             <button type="button" class="btn btn-danger delete-samples" data-toggle="modal" data-target="#delete-samples">Delete samples</button>
                         </div>
                     </div>
@@ -238,6 +240,8 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <button type="button" class="btn btn-success btn-xs upload-excel" data-toggle="modal" data-target="#upload-modal">Upload excel</button>
                 &nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-warning btn-xs move-project" data-toggle="modal" data-target="#move-project">Move project</button>
+
                 <button type="button" class="btn btn-danger btn-xs delete-samples" data-toggle="modal" data-target="#delete-samples">Delete samples</button>
             </div>
         </div>
@@ -335,6 +339,51 @@
                     </span>
                     <span class="pull-right">
                         <button type="button" class="btn btn-primary" id="submit-sample-delete">Submit</button>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="move-project" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Move samples to another project</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="move-project-counter"></p>
+                    <form role="form" id="move-project-form" method="post" action="" id="sample-move">
+                        <div class="form-group" id="error-project">
+                            <label class="control-label" for="project-dropdown">Select project</label>
+
+                            <select id="project-move-dropdown" name="project" class="form-control">>
+                                <option value="none" selected>----</option>
+                                {% for project in projects %}
+
+                                    <!--{% if project.id == current_project %}
+                                        <option id="p-' + {{ project.id }} + '" value="{{ project.id }}" selected>{{ project.title }}</option>
+                                    {% else %} -->
+                                        <option id="p-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                                        <!-- {% endif %} -->
+                                {% endfor %}
+
+                            </select>
+                            <div style="display:none;" class="form-error" id="error-project-move">Select a project</div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="pull-left">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </span>
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-primary" id="submit-move-project">Submit</button>
                     </span>
                 </div>
             </div>
@@ -765,6 +814,73 @@
         });
 
     });
+
+    $(document).on('click','.move-project',function(ev){
+
+        var active_list = $( "#sample-table" ).find( ".active" );
+
+        $('#move-project-counter').html(active_list.length + " samples to be moved");
+
+    });
+
+    $(document).on('click','#submit-move-project',function(ev) {
+
+        ev.preventDefault();
+
+        var target_project = $('#project-move-dropdown').attr('selected','selected').val();
+
+        if (target_project == 'none'){
+            $('#error-move-project').addClass('has-error');
+        } else{
+            $('#error-move-project').removeClass('has-error');
+
+            // delete
+
+            var active_list = $( "#sample-table" ).find( ".active" );
+
+            var sample_pks = [];
+
+            console.log(active_list)
+
+            for(var i=0; i < active_list.length; i++){
+
+                sample_pks.push($(active_list[i]).find('.sample-pk').html());
+
+            }
+
+            console.log(sample_pks)
+
+            $.ajax({
+                type: 'POST',
+                url: '/ajax/move-samples-to-project',
+                data: {
+                    csrfmiddlewaretoken:'{{ csrf_token }}',
+                    project: target_project,
+                    sample_pks:  JSON.stringify(sample_pks),
+                },
+                success: function(data){
+
+                    //window.location.href = '/view-files/';
+                    console.log('success');
+                    alert("Samples moved project");
+                    $('#move-project').modal('hide');
+
+                    $.LoadingOverlay("show");
+                    filter_samples_by_project_and_study(getParameterByName('project_id'),$('#study-dropdown').val());
+                    $.LoadingOverlay("hide");
+
+                },
+                error: function(data){
+
+                    console.log('it errors');
+                }
+            });
+
+        }
+
+    });
+
+
 
     // DELETE MODAL
 

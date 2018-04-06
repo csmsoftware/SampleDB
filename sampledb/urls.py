@@ -83,5 +83,7 @@ urlpatterns = [
 
     url(r'^ajax/delete-samples',ajax_views.delete_samples, name='delete samples'),
 
+    url(r'^ajax/move-samples-to-project',ajax_views.move_samples_to_project, name='move samples'),
+
 
 ]
