@@ -87,7 +87,7 @@ class Sample(models.Model):
     room = models.CharField(max_length=100,null=True,blank=True)
     freezer_id = models.CharField(max_length=20,null=True,blank=True,db_index=True)
     shelf_id = models.CharField(max_length=20,null=True,blank=True)
-    box_id = models.CharField(max_length=20,null=True,blank=True,db_index=True)
+    box_id = models.CharField(max_length=255,null=True,blank=True,db_index=True)
     tissue_bank_reference = models.CharField(max_length=60,null=True,blank=True,db_index=True)
     backfill_data_source = models.CharField(max_length=255,null=True,blank=True)
     is_aliquot = models.BooleanField(default=False)

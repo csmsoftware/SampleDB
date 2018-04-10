@@ -43,6 +43,7 @@ The fields recorded by the system are fixed/hard-coded, and are:
 * Export *Samples* to XLS file.
 * Edit *Samples*.
 * Delete *Samples*.
+* Move *Samples* to another *Project*.
 * Auditing.
 * Presubmission data validation.
 * Offline/asynchronous processing.
