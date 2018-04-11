@@ -68,7 +68,7 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['study_title'] == '' or not sample_fields['study_title']:
         sample_object.study_title = None
     else:
-        if sample_object.study_title != sample_fields['study_title'].strip():
+        if sample_object.study_title != sample_fields['study_title']:
             edited_sample_fields.append('study_title')
         sample_object.study_title = sample_fields['study_title']
 
@@ -76,7 +76,7 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['sample_id'] == '' or not sample_fields['sample_id']:
         sample_object.sample_id = None
     else:
-        if sample_object.sample_id != sample_fields['sample_id'].strip():
+        if sample_object.sample_id != sample_fields['sample_id']:
             edited_sample_fields.append('sample_id')
         sample_object.sample_id = sample_fields['sample_id']
 
@@ -84,7 +84,7 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['species'] == '' or not sample_fields['species']:
         sample_object.species = None
     else:
-        if sample_object.species != sample_fields['species'].strip():
+        if sample_object.species != sample_fields['species']:
             edited_sample_fields.append('species')
         sample_object.species = sample_fields['species']
 
@@ -92,7 +92,7 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['sample_matrix'] == '' or not sample_fields['sample_matrix']:
         sample_object.sample_matrix = None
     else:
-        if sample_object.sample_matrix != sample_fields['sample_matrix'].strip():
+        if sample_object.sample_matrix != sample_fields['sample_matrix']:
             edited_sample_fields.append('sample_matrix')
         sample_object.sample_matrix = sample_fields['sample_matrix']
 
@@ -100,91 +100,91 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['collection_protocol'] == '' or not sample_fields['collection_protocol']:
         sample_object.collection_protocol = None
     else:
-        if sample_object.collection_protocol != sample_fields['collection_protocol'].strip():
+        if sample_object.collection_protocol != sample_fields['collection_protocol']:
             edited_sample_fields.append('collection_protocol')
         sample_object.collection_protocol = sample_fields['collection_protocol']
 
     if sample_fields['parent_type'] == '' or not sample_fields['parent_type']:
         sample_object.parent_type = None
     else:
-        if sample_object.parent_type != sample_fields['parent_type'].strip():
+        if sample_object.parent_type != sample_fields['parent_type']:
             edited_sample_fields.append('parent_type')
         sample_object.parent_type = sample_fields['parent_type']
 
     if sample_fields['parent_id'] == '' or not sample_fields['parent_id']:
         sample_object.parent_id = None
     else:
-        if sample_object.parent_id != sample_fields['parent_id'].strip():
+        if sample_object.parent_id != sample_fields['parent_id']:
             edited_sample_fields.append('parent_id')
         sample_object.parent_id = sample_fields['parent_id']
 
     if sample_fields['sample_storage_type'] == '' or not sample_fields['sample_storage_type']:
         sample_object.sample_storage_type = None
     else:
-        if sample_object.sample_storage_type != sample_fields['sample_storage_type'].strip():
+        if sample_object.sample_storage_type != sample_fields['sample_storage_type']:
             edited_sample_fields.append('sample_storage_type')
         sample_object.sample_storage_type = sample_fields['sample_storage_type']
 
     if sample_fields['hazard_group'] == '' or not sample_fields['hazard_group']:
         sample_object.hazard_group = None
     else:
-        if sample_object.hazard_group != sample_fields['hazard_group'].strip():
+        if sample_object.hazard_group != sample_fields['hazard_group']:
             edited_sample_fields.append('hazard_group')
         sample_object.hazard_group = sample_fields['hazard_group']
 
     if sample_fields['hazard_description'] == '' or not sample_fields['hazard_description']:
         sample_object.hazard_description = None
     else:
-        if sample_object.hazard_description != sample_fields['hazard_description'].strip():
+        if sample_object.hazard_description != sample_fields['hazard_description']:
             edited_sample_fields.append('hazard_description')
         sample_object.hazard_description = sample_fields['hazard_description']
 
     if sample_fields['campus'] == '' or not sample_fields['campus']:
         sample_object.campus = None
     else:
-        if sample_object.campus != sample_fields['campus'].strip():
+        if sample_object.campus != sample_fields['campus']:
             edited_sample_fields.append('campus')
         sample_object.campus = sample_fields['campus']
 
     if sample_fields['building'] == '' or not sample_fields['building']:
         sample_object.building = None
     else:
-        if sample_object.building != sample_fields['building'].strip():
+        if sample_object.building != sample_fields['building']:
             edited_sample_fields.append('building')
         sample_object.building = sample_fields['building']
 
     if sample_fields['room'] == '' or not sample_fields['room']:
         sample_object.room = None
     else:
-        if sample_object.room != sample_fields['room'].strip():
+        if sample_object.room != sample_fields['room']:
             edited_sample_fields.append('room')
         sample_object.room = sample_fields['room']
 
     if sample_fields['freezer_id'] == '' or not sample_fields['freezer_id']:
         sample_object.freezer_id = None
     else:
-        if sample_object.freezer_id != sample_fields['freezer_id'].strip():
+        if sample_object.freezer_id != sample_fields['freezer_id']:
             edited_sample_fields.append('freezer_id')
         sample_object.freezer_id = sample_fields['freezer_id']
 
     if sample_fields['shelf_id'] == '' or not sample_fields['shelf_id']:
         sample_object.shelf_id = None
     else:
-        if sample_object.shelf_id != sample_fields['shelf_id'].strip():
+        if sample_object.shelf_id != sample_fields['shelf_id']:
             edited_sample_fields.append('shelf_id')
         sample_object.shelf_id = sample_fields['shelf_id']
 
     if sample_fields['box_id'] == '' or not sample_fields['box_id']:
         sample_object.box_id = None
     else:
-        if sample_object.box_id != sample_fields['box_id'].strip():
+        if sample_object.box_id != sample_fields['box_id']:
             edited_sample_fields.append('box_id')
         sample_object.box_id = sample_fields['box_id']
 
     if sample_fields['tissue_bank_reference'] == '' or not sample_fields['tissue_bank_reference']:
         sample_object.tissue_bank_reference = None
     else:
-        if sample_object.tissue_bank_reference != sample_fields['tissue_bank_reference'].strip():
+        if sample_object.tissue_bank_reference != sample_fields['tissue_bank_reference']:
             edited_sample_fields.append('tissue_bank_reference')
         sample_object.tissue_bank_reference = sample_fields['tissue_bank_reference']
 
