@@ -404,11 +404,11 @@ def submit_file_upload(request):
     staging_object.save()
 
     # INLINE EXECUTION
-    rq_workers.validate_sample_file(job.id,staging_object.id,file.id)
+    #rq_workers.validate_sample_file(job.id,staging_object.id,file.id)
 
     # RQ EXECUTION
-    #rq_job = django_rq.enqueue(rq_workers.validate_sample_file, job.id,staging_object.id,file.id)
-    #job.rq_id = rq_job.id
+    rq_job = django_rq.enqueue(rq_workers.validate_sample_file, job.id,staging_object.id,file.id)
+    job.rq_id = rq_job.id
 
     job.save()
 
