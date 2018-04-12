@@ -5,7 +5,7 @@ from django.db import models
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
-#from simple_history.models import HistoricalRecords
+from simple_history.models import HistoricalRecords
 
 
 # Check if the title already exists
@@ -63,7 +63,7 @@ class Project(models.Model):
     project_reference_number = models.CharField(max_length=20,null=True,blank=True)
     datetime_created = models.DateTimeField('date created',auto_now_add=True)
     last_modified = models.DateTimeField('last modified',auto_now=True)
-  #  history = HistoricalRecords()
+    history = HistoricalRecords()
 
     def __str__(self):
         return '%s' % (self.title)
@@ -95,7 +95,7 @@ class Sample(models.Model):
     is_deleted = models.BooleanField(default=False,db_index=True)
     delete_method = models.CharField(max_length=255,null=True,blank=True)
     datetime_created = models.DateTimeField('datetime_created',auto_now_add=True,null=True) # Try and populate from the previous DB.
-#    history = HistoricalRecords()
+    history = HistoricalRecords()
     last_edited_user = models.ForeignKey(User, on_delete=models.PROTECT,related_name='last_edited_user',null=True)
     last_modified = models.DateTimeField('last modified',auto_now=True,null=True)
 
@@ -148,7 +148,7 @@ class File(models.Model):
     datetime_uploaded = models.DateTimeField('datetime_uploaded',auto_now_add=True)
     datetime_last_accessed = models.DateTimeField('datetime_last_accessed',blank=True,null=True)
     type = models.CharField(max_length=255,null=True,blank=True)
- #   history = HistoricalRecords()
+    history = HistoricalRecords()
 
     def __str__(self):
         return '%s' % (self.filename)
