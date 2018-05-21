@@ -75,7 +75,7 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>#</th>
+                            <th>PK # History</th>
                             <th>Project title</th>
                             <th>Study title</th>
                             <th>Sample ID</th>
@@ -179,7 +179,7 @@
             sample_extra = sample_extras[sample.pk];
 
             html = html + '<tr class="clickable-row" id="s-' + sample.pk + '">';
-            html = html + '<td class="sample-pk">' + sample.pk + '</td>';
+            html = html + '<td class="sample-pk"><a href="/admin/sampledbapp/sample/' + sample.pk + '/history/">' + sample.pk + '</a></td>';
 
             html = html + '<td id="project_title-' + sample.pk + '">' + sample_extra.project_title + '</td>';
             html = html + '<td id="study_title-' + sample.pk + '">' + ((sample.fields.study_title != null) ? sample.fields.study_title : "" ) + '</td>';

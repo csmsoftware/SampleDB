@@ -63,7 +63,16 @@ class Project(models.Model):
     project_reference_number = models.CharField(max_length=20,null=True,blank=True)
     datetime_created = models.DateTimeField('date created',auto_now_add=True)
     last_modified = models.DateTimeField('last modified',auto_now=True)
+    changed_by = models.ForeignKey(User,on_delete=models.PROTECT,null=True,blank=True)
     history = HistoricalRecords()
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
     def __str__(self):
         return '%s' % (self.title)
@@ -98,6 +107,16 @@ class Sample(models.Model):
     history = HistoricalRecords()
     last_edited_user = models.ForeignKey(User, on_delete=models.PROTECT,related_name='last_edited_user',null=True)
     last_modified = models.DateTimeField('last modified',auto_now=True,null=True)
+    changed_by = models.ForeignKey(User,on_delete=models.PROTECT,null=True,blank=True)
+    history = HistoricalRecords()
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
     def __str__(self):
         return '%s %s' % (self.sample_id,self.study_title)
