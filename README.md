@@ -21,15 +21,15 @@ The fields recorded by the system are fixed/hard-coded, and are:
 * Study title - *Project* collections can be subdivided into *Studies*.
 * Sample ID - The sample identifier - must be unique by study_title.
 * Species - Human or *?*
-* Sample Matrix - Sample type + protocol - ie 'Serum - DNA extract'.
-* Collection Protocol - *TBA*.
+* Sample Matrix - Sample type - ie 'Serum'.
+* Collection Protocol - How the sample has been processed - ie 'Filtered'.
 * Campus - Which campus is the sample stored in?
 * Building - Which building is the sample stored in?
 * Room - Which room is the sample stored in?
 * Freezer ID - Which freezer is the sample stored in?
 * Shelf ID - Which freezer shelf is the sample stored in?
 * Box ID - Which box is the sample stored in?
-* Consent Form Information - Record who/where the consent forms are stored.
+* Consent Form Information - Record where the consent forms are stored, or the REC number.
 * Tissue Bank Reference - The Tissue Bank Collection ID.
 * Parent ID - May be used for pseudo-anonymised subject identifiers.
 * Parent Type - What kind of pseudo-anonymised identifier?
