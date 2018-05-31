@@ -167,7 +167,7 @@
 
 
         //html = '<div id="task-' + staging.fields.job.id + '"><div id="staging-' + staging.pk + '" class="col-md-6 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-lg-12">';
-        html = '<div id="staging-' + staging.pk + '" class="col-md-6 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-xs-6">';
+        html = '<div id="staging-' + staging.pk + '" class="col-md-8 col-sm-12"><div class="panel ' + panel_type + '"><div class="panel-heading"> <div class="row"> <div class="col-xs-6">';
         html = html + '<strong>Staging commit id: ' + staging.pk + ' - ' + staging.fields.type;
 
        // if (staging.fields.project) {
@@ -176,8 +176,6 @@
         html = html + '</strong></div> <div class="col-xs-6 text-right">';
         html = html + '<div>' + status_string + '</div></div> </div> </div><div class="panel-footer">';
         html = html + '<span class="pull-left">' + date_info +'</span>';
-
-
 
         // html = html + '<a data-toggle="collapse" data-parent="task-' + staging.pk + '" href="#collapse-' + staging.pk + '">';
 

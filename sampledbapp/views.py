@@ -28,8 +28,6 @@ def index(request):
     return HttpResponse(template.render(template_variables,request))
 
 
-
-
 def home(request):
 
     if not request.user.is_authenticated:
@@ -40,8 +38,6 @@ def home(request):
     template_variables =  {}
 
     return HttpResponse(template.render(template_variables,request))
-
-
 
 
 def login_user(request):
@@ -168,8 +164,7 @@ def view_projects(request):
         messages.add_message(request, messages.ERROR, 'You must be logged in to view this page' )
         return HttpResponseRedirect('/')
 
-
-    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user))
+    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user)).order_by('group','title')
 
     template = loader.get_template('view-projects.html')
     template_variables = {}
@@ -190,7 +185,7 @@ def view_samples(request):
     # Default all:
     #samples = Sample.objects.filter(project__in=Project.objects.filter(group__in=Group.objects.filter(user=request.user))).order_by('id')
 
-    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user))
+    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user)).order_by('title')
 
     template = loader.get_template('view-samples.html')
     template_variables = {}
@@ -308,7 +303,7 @@ def view_files(request):
         return HttpResponseRedirect('/')
 
         #jobs = Job.objects.filter(user=request.user).order_by('pk')
-    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user))
+    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user)).order_by('title')
     files = File.objects.filter(project__in=projects).order_by('-pk')
     template = loader.get_template('view-files.html')
 
