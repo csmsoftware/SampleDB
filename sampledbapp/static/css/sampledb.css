@@ -16,6 +16,9 @@ body .sidebar{width: 0px;}
 }
 body #wrapper .table tbody tr td{font-size:13px; padding:2px 3px;min-width:155px; word-wrap: break-word;}
 body #wrapper .table tbody tr th{font-size:13px; padding:2px 3px;min-width:155px;word-wrap: break-word;}
+
+body #wrapper .table>tbody>tr.active>td{background-color:#d9534f;}
+
 /* body #wrapper .table tbody tr th.mf{padding:0;min-width:100px;}
 body #wrapper .table tbody tr th.mf text{padding:0;}
 */

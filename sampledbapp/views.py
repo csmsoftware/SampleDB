@@ -346,11 +346,10 @@ def sample_search(request):
         messages.add_message(request, messages.ERROR, 'You must be logged in to view this page' )
         return HttpResponseRedirect('/')
 
+    #if not request.user.groups.filter(name='Auditors').exists():
 
-    if not request.user.groups.filter(name='Auditors').exists():
-
-        messages.add_message(request, messages.ERROR, 'You do not have permission to view this page' )
-        return HttpResponseRedirect('/home/')
+    #    messages.add_message(request, messages.ERROR, 'You do not have permission to view this page' )
+    #    return HttpResponseRedirect('/home/')
 
 
     template = loader.get_template('sample-search.html')

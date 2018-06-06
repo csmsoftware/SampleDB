@@ -488,8 +488,13 @@ def export_samples(request):
 # Ajax search samples
 def search_samples(request):
 
+    if request.user.groups.filter(name='Auditors').exists():
 
-    samples = Sample.objects.all()
+        samples = Sample.objects.all()
+
+    else:
+
+        samples = Sample.objects.filter(project__in=Project.objects.filter(group__in=Group.objects.filter(user=request.user)))
 
     # Filter the samples
     if request.POST['sample_id'] != '':
