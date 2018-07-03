@@ -31,6 +31,8 @@ def commit_staging_samples(job_id,staging_id):
             update_list = update_sample_model(row_id,sample_fields,staging_object.project)
             sample_object = update_list[0]
 
+        sample_object.last_edited_user = job.user
+        sample_object.changed_by = job.user
         sample_object.save()
 
     staging_object.status = 4

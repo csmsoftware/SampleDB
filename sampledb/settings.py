@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'django-auth-ldap',
-   # 'simple_history',
+    'simple_history',
     'sampledbapp',
     'django_rq'
 ]

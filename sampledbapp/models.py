@@ -117,6 +117,7 @@ class Sample(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+        self.last_edited_user = value
 
     def __str__(self):
         return '%s %s' % (self.sample_id,self.study_title)
