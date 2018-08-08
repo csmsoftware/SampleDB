@@ -223,6 +223,14 @@ def check_staging_samples(job_id,staging_id):
     # Update the job status
     finish_job(job)
 
+def replace_quotes(sample_fields):
+
+    for field_name,value in sample_fields.items():
+
+        sample_fields[field_name] = value.replace('"', "'")
+
+    return sample_fields
+
 def check_fields(json_objects,staging_object):
 
     passed_samples = []
@@ -234,6 +242,8 @@ def check_fields(json_objects,staging_object):
     for row_id,sample_fields in json_objects['objects'].items():
 
         error_map = {}
+
+        sample_fields = replace_quotes(sample_fields)
 
         # If its a number is likely to be a pk. Treat it as such.
         if not is_number(row_id):
