@@ -78,7 +78,7 @@ def update_sample_model(sample_pk,sample_fields,project):
     if sample_fields['sample_id'] == '' or not sample_fields['sample_id']:
         sample_object.sample_id = None
     else:
-        if sample_object.sample_id != sample_fields['sample_id']:
+        if sample_object.sample_id != str(sample_fields['sample_id']):
             edited_sample_fields.append('sample_id')
         sample_object.sample_id = str(sample_fields['sample_id'])
 
@@ -246,7 +246,7 @@ def check_fields(json_objects,staging_object):
             sample_object.project = staging_object.project
             sample_object.last_edited_user = staging_object.user
 
-            unique_key = sample_fields["sample_id"]+"-"+sample_fields["study_title"]
+            unique_key = str(sample_fields["sample_id"])+"-"+sample_fields["study_title"]
 
             if unique_key not in uniqueness_check:
 
@@ -254,7 +254,7 @@ def check_fields(json_objects,staging_object):
 
             uniqueness_check[unique_key].append(row_id)
 
-            if(len(Sample.objects.filter(sample_id=sample_fields["sample_id"],
+            if(len(Sample.objects.filter(sample_id=str(sample_fields["sample_id"]),
                                          study_title=sample_fields["study_title"])) > 0):
                 error_map = {'sample_id':'Sample ID already exists!'}
 
@@ -269,7 +269,7 @@ def check_fields(json_objects,staging_object):
 
             edited_fields[sample_object.id] = output[1]
 
-            unique_key = sample_object.sample_id+"-"+sample_object.study_title
+            unique_key = str(sample_object.sample_id)+"-"+sample_object.study_title
 
             if unique_key not in uniqueness_check:
 
