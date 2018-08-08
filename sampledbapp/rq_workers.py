@@ -227,7 +227,9 @@ def replace_quotes(sample_fields):
 
     for field_name,value in sample_fields.items():
 
-        sample_fields[field_name] = value.replace('"', "'")
+        if isinstance(value, str):
+
+            sample_fields[field_name] = value.replace('"', "'")
 
     return sample_fields
 
