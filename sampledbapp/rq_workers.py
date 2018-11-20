@@ -229,7 +229,10 @@ def replace_quotes(sample_fields):
 
         if isinstance(value, str):
 
-            sample_fields[field_name] = value.replace('"', "'")
+            sample_fields[field_name] = value.replace('"', "\"")
+
+        else:
+            sample_fields[field_name] = value
 
     return sample_fields
 
