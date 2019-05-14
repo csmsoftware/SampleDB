@@ -1,3 +1,4 @@
+
 from sampledbapp.models import *
 from django.utils.timezone import now
 import json
@@ -457,7 +458,12 @@ def build_json(ws,header_map,staging_object):
 
             if col_idx and row[(col_idx - 1)]:
 
-                sample_fields[field_name] = row[(col_idx - 1)].value
+                cell_contents = row[(col_idx - 1)].value
+                if isinstance(cell_contents, str):
+                    cell_contents = cell_contents.replace("\r"," ")
+                    sample_fields[field_name] = cell_contents.replace("\n"," ")
+                else:
+                    sample_fields[field_name] = cell_contents
 
             # else:
 
