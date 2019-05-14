@@ -379,7 +379,7 @@
         edited_sample_fields = field_validation.edited_fields[row_id];
 
         if (field_name in failed_sample) {
-            html = html + "<td style='width:100%;word-wrap: break-word' class='danger'><input type='text' class='failed-samples' name='" + field_name + "-" + row_id + "' value='" + staging_object[field_name] + "'/><br /><i>" + failed_sample[field_name] + "</i></td>";
+            html = html + "<td style='width:100%;word-wrap: break-word' class='danger'><input size='7' type='text' class='failed-samples' name='" + field_name + "-" + row_id + "' value='" + staging_object[field_name] + "'/><br /><i>" + failed_sample[field_name] + "</i></td>";
 
         } else if (edited_sample_fields.indexOf(field_name) >= 0) {
             html = html + "<td style='width:100%;word-wrap: break-word' class='success'><i>" + staging_object[field_name] + "</i></td>";
