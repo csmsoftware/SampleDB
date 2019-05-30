@@ -87,12 +87,12 @@ AUTHENTICATION_BACKENDS = (
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 #DATABASES = {
 #    'default': {
@@ -105,18 +105,18 @@ DATABASES = {
 #    }
 #}
 
-#DATABASES = {
-#    'default': {
-#        'NAME': 'sampledb',
+DATABASES = {
+    'default': {
+        'NAME': 'sampledb',
 #        #'ENGINE': 'mysql.connector.django',
-#        'ENGINE': 'django.db.backends.mysql',
-#        'USER': 'sampledb',
-#        'PASSWORD': 'testpass',
-#        'OPTIONS': {
-#            'autocommit': True,
-#        },
-#    }
-#}
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'sampledb',
+        'PASSWORD': 'testpass',
+        'OPTIONS': {
+            'autocommit': True,
+        },
+    }
+}
 
 
 RQ_QUEUES = {

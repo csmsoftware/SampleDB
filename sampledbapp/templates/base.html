@@ -188,56 +188,6 @@
 
     <body>
 
-    <!--
-    {% comment %}
-    <div class="navbar navbar-inverse">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">Name</a>
-        </div>
-        <div class="navbar-collapse collapse navbar-inverse-collapse">
-
-            {% if not user.is_authenticated %}
-
-            {% include 'includes/logged_out_nav.html'  %}
-
-            {% elif is_dietitian %}
-
-            {% include 'includes/dietitian_nav.html' %}
-
-            {% else %}
-
-            {% include 'includes/logged_in_nav.html'  %}
-
-            {% endif %}
-
-        </div>
-    </div>
-    <div id="content" class="container">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="row">
-            <div class="col-sm-11 col-md-9 col-lg-7 col-center">
-                <div class="alert alert-dismissable alert-{{ message.level_tag }}">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        {% block content %}{% endblock %}
-
-        {% block javascript %}{% endblock %}
-
-    </div>
-    {% endcomment %}
-    -->
     <div id="wrapper">
 
         <!-- Navigation -->
@@ -270,18 +220,6 @@
                         <h4>&nbsp;SampleDB</h4>
                     </div>
                 </div>
-                <!-- </div> -->
-           <!--     <div class="navbar-collapse"> -->
-          <!--      <div class="mob visible-sm visible-xs">
-                    <a class="navbar-brand" href="/"><i class="fa fa-home fa-fw"></i>TESTHome</a>
-                    <a class="navbar-brand" href="/view-projects/"><i class="fa fa-sitemap fa-fw"></i> Projects</a>
-                    <a class="navbar-brand" href="/view-samples/"><i class="fa fa-table fa-fw"></i>Samples</a>
-                    <a class="navbar-brand" href="/view-files/"><i class="fa fa-file fa-fw"></i>Files</a>
-                    <a class="navbar-brand" href="/pending-commits/"><i class="fa fa fa-wrench fa-fw"></i>Pending Changes</a>
-                    <a class="navbar-brand" href="/sample-search/"><i class="fa fa fa-search fa-fw"></i>Auditing</a>
-                    <a class="navbar-brand" href="/admin/"><i class="fa fa fa-gears fa-fw"></i>Admin</a>
-                    <a class="navbar-brand" href="/logout/"><i class="fa fa fa-sign-out fa-fw"></i>Logout</a>
-                </div> -->
 
             </div>
             <!-- /.navbar-header -->
@@ -344,21 +282,21 @@
                     <ul class="nav mobile-nav collapsed navbar-collapsed mobile-nav" id="side-menu">
                         <div class="col-xs-4">
 
-                            <li href="/view-home/"><i class="fa fa-home fa-fw"></i>Home</li>
-                            <li href="/view-projects/"><i class="fa fa-sitemap fa-fw"></i>Projects</li>
-                            <li href="/view-samples/"><i class="fa fa-table fa-fw"></i>Samples</li>
+                            <li><a href="/view-home/"><i class="fa fa-home fa-fw"></i>Home</a></li>
+                            <li><a href="/view-projects/"><i class="fa fa-sitemap fa-fw"></i>Projects</a></li>
+                            <li><a href="/view-samples/"><i class="fa fa-table fa-fw"></i>Samples</a></li>
 
                         </div>
                         <div class="col-xs-4">
-                            <li href="/pending-commits/"><i class="fa fa fa-wrench fa-fw"></i>Changes</li>
-                            <li href="/view-files/"><i class="fa fa-file fa-fw"></i>Files</li>
-                            <li href="/sample-search/"><i class="fa fa fa-search fa-fw"></i>Tasks</li>
+                            <li><a href="/pending-commits/"><i class="fa fa fa-wrench fa-fw"></i>Changes</a></li>
+                            <li><a href="/view-files/"><i class="fa fa-file fa-fw"></i>Files</a></li>
+                            <li><a href="/sample-search/"><i class="fa fa fa-search fa-fw"></i>Tasks</a></li>
 
                         </div>
                         <div class="col-xs-4">
-                            <li href="/sample-search/"><i class="fa fa fa-search fa-fw"></i>Auditing</li>
-                            <li href="/admin/"><i class="fa fa fa-gears fa-fw"></i>Admin</li>
-                            <li href="/logout/"><i class="fa fa fa-sign-out fa-fw"></i>Logout</li>
+                            <li><a href="/sample-search/"><i class="fa fa fa-search fa-fw"></i>Auditing</a></li>
+                            <li><a href="/admin/"><i class="fa fa fa-gears fa-fw"></i>Admin</a></li>
+                            <li><a href="/logout/"><i class="fa fa fa-sign-out fa-fw"></i>Logout</a></li>
                         </div>
 
                     </ul>

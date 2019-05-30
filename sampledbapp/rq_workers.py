@@ -407,8 +407,9 @@ def validate_sample_file(job_id,staging_id,file_id):
         #if sample_check_clash:
         #    file_validation['errors'].append('Edited samples have no PK field and multiple sample ids found in DB')
 
-
+       # print(json_output)
         staging_object.json = json.dumps(json.dumps(json_output))
+
         #staging_object.json = build_json(ws,header_map,staging_object)
         #staging_object.field_validation = check_file_fields(staging_object.json,header_map)
         #validation = check_fields(json_object)
@@ -458,10 +459,18 @@ def build_json(ws,header_map,staging_object):
 
             if col_idx and row[(col_idx - 1)]:
 
-                cell_contents = row[(col_idx - 1)].value
+                # If its date, just import the base value
+                if row[(col_idx - 1)].is_date:
+                    cell_contents = row[(col_idx - 1)].base_date
+
+                # Otherwise get the value
+                else:
+                    cell_contents = row[(col_idx - 1)].value
+
                 if isinstance(cell_contents, str):
                     cell_contents = cell_contents.replace("\r"," ")
                     sample_fields[field_name] = cell_contents.replace("\n"," ")
+
                 else:
                     sample_fields[field_name] = cell_contents
 
