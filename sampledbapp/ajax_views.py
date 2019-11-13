@@ -19,6 +19,7 @@ from sampledbapp import rq_workers
 import urllib
 import operator
 #import unicode
+import shutil
 
 # Save a new or edited project
 def save_project(request):
@@ -382,7 +383,7 @@ def submit_file_upload(request):
 
     full_path = os.path.join(folder_path,file_obj.name)
 
-    os.rename(file_obj.temporary_file_path(),full_path)
+    shutil.move(file_obj.temporary_file_path(),full_path)
 
     file = File.objects.create(project=Project.objects.get(pk=project_id),
                                user_uploaded=request.user,

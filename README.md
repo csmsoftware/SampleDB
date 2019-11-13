@@ -46,8 +46,12 @@ The fields recorded by the system are fixed/hard-coded, and are:
 * Move *Samples* to another *Project*.
 * Auditing.
 * Presubmission data validation.
+* Authorised locations.
+* Freezer custodians.
 * Offline/asynchronous processing.
 * Historical records for auditing/security. (Requires [django-simple-history](https://django-simple-history.readthedocs.io/en/latest/) package).
+
+
 
 ## Requirements
 

@@ -38,20 +38,51 @@ def validate_project_p_code(value):
     if not value[:1].isalpha():
         raise ValidationError('Please enter a valid project code')
 
-# Check the campuses are allowed
 def validate_campuses(value):
-
     pass
 
-#   allowed_campuses = ['SK','CXH','HH','SMH']
-#
-#   if value not in allowed_campuses:
-#
-#       raise ValidationError('Campus must be one of SK, CXH, HH, or SMH')
+
+class Freezer(models.Model):
+
+    freezer_id = models.CharField(max_length=40,null=True,blank=True,db_index=True)
+    custodian = models.ForeignKey(User,on_delete=models.PROTECT,null=True,blank=True)
+    keycode = models.CharField(max_length=10)
+    comments = models.TextField(null=True,blank=True)
+    is_human_allowed = models.BooleanField(blank=True,null=True)
+    contact_person_one = models.ForeignKey(User,related_name='user_contact_one',on_delete=models.PROTECT,null=True,blank=True)
+    contact_person_one_phone = models.IntegerField(null=True,blank=True)
+    contact_person_two = models.ForeignKey(User,related_name='user_contact_two',on_delete=models.PROTECT,null=True,blank=True)
+    contact_person_two_phone = models.IntegerField(null=True,blank=True)
+    contact_person_three = models.ForeignKey(User,related_name='user_contact_three',on_delete=models.PROTECT,null=True,blank=True)
+    contact_person_three_phone = models.IntegerField(null=True,blank=True)
+    contact_person_four = models.ForeignKey(User,related_name='user_contact_four',on_delete=models.PROTECT,null=True,blank=True)
+    contact_person_four_phone = models.IntegerField(null=True,blank=True)
+    contact_person_five = models.ForeignKey(User,related_name='user_contact_five',on_delete=models.PROTECT,null=True,blank=True)
+    contact_person_five_phone = models.IntegerField(null=True,blank=True)
+
+    history = HistoricalRecords()
+    last_edited_user = models.ForeignKey(User, on_delete=models.PROTECT,related_name='last_edited_user_freezer',null=True)
+
+    @property
+    def _history_user(self):
+        return self.last_edited
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.last_edited_user = value
+
+    def __str__(self):
+        return '%s %s' % (self.freezer_id,self.custodian)
+
+class LocationValidation(models.Model):
+
+    field_name = models.CharField(max_length=40,null=True,blank=True)
+    field_entry = models.CharField(max_length=255,null=True,blank=True)
+    added_by = models.ForeignKey(User,on_delete=models.PROTECT,null=True,blank=True)
+    datetime_added = models.DateTimeField('date created',auto_now_add=True)
 
 
 class Project(models.Model):
-
 
     #title = models.CharField(max_length=80,validators=[validate_project_title])
     title = models.CharField(max_length=80,unique=True)
@@ -91,7 +122,7 @@ class Sample(models.Model):
     sample_storage_type = models.CharField(max_length=255,null=True,blank=True)
     hazard_group = models.CharField(max_length=10,null=True,blank=True)
     hazard_description = models.CharField(max_length=255,null=True,blank=True)
-    campus = models.CharField(max_length=10,null=True,blank=True,validators=[validate_campuses])
+    campus = models.CharField(max_length=10,null=True,blank=True)
     building = models.CharField(max_length=100,null=True,blank=True)
     room = models.CharField(max_length=100,null=True,blank=True)
     freezer_id = models.CharField(max_length=40,null=True,blank=True,db_index=True)
@@ -108,7 +139,6 @@ class Sample(models.Model):
     last_edited_user = models.ForeignKey(User, on_delete=models.PROTECT,related_name='last_edited_user',null=True)
     last_modified = models.DateTimeField('last modified',auto_now=True,null=True)
     changed_by = models.ForeignKey(User,on_delete=models.PROTECT,null=True,blank=True)
-    history = HistoricalRecords()
 
     @property
     def _history_user(self):
@@ -122,7 +152,23 @@ class Sample(models.Model):
     def __str__(self):
         return '%s %s' % (self.sample_id,self.study_title)
 
+    def check_field_type(self,field_name,field_entry):
+
+        objects = LocationValidation.objects.filter(field_name=field_name,field_entry=field_entry)
+
+        if len(objects) == 0:
+            raise ValidationError(field_name + " " + field_entry + " not in authorised list")
+
     def validate(self,data):
+
+        self.check_field_type(self,'campus',data['campus'].strip())
+        self.check_field_type(self,'building',data['building'].strip())
+        self.check_field_type(self,'room',data['room'].strip())
+        self.check_field_type(self,'freezer',data['freezer_id'].strip())
+
+        for field in data:
+            if data[field].strip() in ["","na","nan","x","-","none","."]:
+                raise ValidationError('Fields cannot contain ' + data[field])
 
         # Human checks
         if data['species'].lower().strip() == 'human':
@@ -131,8 +177,10 @@ class Sample(models.Model):
             if data['consent_form_information'] == '' or not data['consent_form_information']:
                 raise ValidationError('Human records must have consent form information')
 
-        return data
+            if len(Freezer.objects.filter(freezer_id=data['freezer_id'].strip(),is_human_allowed=1)) == 0:
+                raise ValidationError('Freezer ' + data['freezer_id'].strip() + " is not authorised for storing human samples")
 
+        return data
 
 
 class Job(models.Model):
