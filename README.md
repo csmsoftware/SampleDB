@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/csmsoftware/SampleDB/blob/master/sampledbapp/static/img/sampledb-logo-220.png "SampleDB")
 
-SampleDB is an open-source Python/Django web application for recording the physical location of pseudo-anonymised samples, in line with the Human Tissue Act (HTA) and the General Data Protection Regulation (GDPR).
+SampleDB is an open-source Python/Django web application for recording the physical location of pseudo-anonymised samples, in line with the Human Tissue Act (HTA).
 
 Developed by [Gordon Haggart](https://github.com/ghaggart) for Imperial College London.
 
@@ -10,7 +10,7 @@ Apache 2 licence.
 
 ## Data model
 
-1. Each project lead/PI is a GDPR/HTA data owner, and has a *Group* with allowed users.
+1. Each project lead/PI a *Group* with allowed users.
 2. Each *Group* contains *Projects*, and each *Project* contains *Samples*.
 3. Each *Sample* contains the fields necessary for recording the sample type, storage location, consent form information and tissue bank reference.
 
