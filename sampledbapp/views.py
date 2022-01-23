@@ -185,7 +185,7 @@ def view_samples(request):
     # Default all:
     #samples = Sample.objects.filter(project__in=Project.objects.filter(group__in=Group.objects.filter(user=request.user))).order_by('id')
 
-    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user)).order_by('title')
+    projects = Project.objects.filter(group__in=Group.objects.filter(user=request.user)).order_by('group_id','title')
 
     template = loader.get_template('view-samples.html')
     template_variables = {}

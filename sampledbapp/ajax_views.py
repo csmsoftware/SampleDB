@@ -251,7 +251,7 @@ def get_user_jobs(request):
 def get_pending_commits(request):
 
     # If reverse is set, reverse it. Otherwise default to 0
-    staging = Staging.objects.filter(user=request.user,status__in=[1,2,3,4]).order_by('pk')
+    staging = Staging.objects.filter(user=request.user,status__in=[1,2,3]).order_by('-pk')[:10]
 
     data = serializers.serialize('json',staging)
     #jobs = serializers.serialize('json',jobs)

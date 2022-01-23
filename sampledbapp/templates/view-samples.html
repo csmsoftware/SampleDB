@@ -366,9 +366,9 @@
                                 {% for project in projects %}
 
                                     <!--{% if project.id == current_project %}
-                                        <option id="p-' + {{ project.id }} + '" value="{{ project.id }}" selected>{{ project.title }}</option>
+                                        <option id="p-' + {{ project.id }} + '" value="{{ project.id }}" selected>{{ project.group.name }} - {{ project.title }}</option>
                                     {% else %} -->
-                                        <option id="p-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                                        <option id="p-{{ project.id }}" value="{{ project.id }}">{{ project.group.name }} - {{ project.title }}</option>
                                         <!-- {% endif %} -->
                                 {% endfor %}
 
