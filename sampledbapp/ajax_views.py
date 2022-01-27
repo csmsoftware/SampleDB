@@ -251,12 +251,20 @@ def get_user_jobs(request):
 def get_pending_commits(request):
 
     # If reverse is set, reverse it. Otherwise default to 0
-    staging = Staging.objects.filter(user=request.user,status__in=[1,2,3]).order_by('-pk')[:10]
-
-    data = serializers.serialize('json',staging)
+    stagings = Staging.objects.filter(user=request.user,status__in=[1,2,3]).order_by('-pk')[:10]
+    project_ids = []
+    for staging in stagings:
+        project_ids.append(staging.project_id)
+    projects = Project.objects.filter(pk__in=project_ids).all()
+    project_names = {}
+    for project in projects:
+        project_names[project.pk] = project.title
+    data = {}
+    data['stagings'] = serializers.serialize('json', stagings)
+    data['project_names'] = project_names
     #jobs = serializers.serialize('json',jobs)
 
-    return HttpResponse(data, content_type = "application/json")
+    return HttpResponse(json.dumps(data), content_type = "application/json")
 
 
 # Get the pending commits
