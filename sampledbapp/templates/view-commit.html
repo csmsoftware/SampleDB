@@ -438,10 +438,8 @@
         edited_sample_fields = field_validation.edited_fields[row_id];
 
         if (edited_sample_fields.indexOf(field_name) >= 0) {
-            console.log('found it')
             html = html + "<td class='success'><i>" + staging_object[field_name] + "</i></td>";
         } else {
-            console.log('not found it')
             html = html + "<td>" + staging_object[field_name] + "</td>";
         }
 
