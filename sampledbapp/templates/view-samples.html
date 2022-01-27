@@ -266,7 +266,7 @@
                                 <option value="none" selected>----</option>
 
                                 {% for project in projects %}
-                                    <option id="pf-{{ project.id }}" value="{{ project.id }}">{{ project.title }}</option>
+                                    <option id="pf-{{ project.id }}" value="{{ project.id }}">{{ project.group.name }} - {{ project.title }}</option>
                                 {% endfor %}
                             </select>
                             <div style="display:none;" class="form-error" id="error-project">Select project</div>
