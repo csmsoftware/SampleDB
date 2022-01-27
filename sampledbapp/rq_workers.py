@@ -657,7 +657,17 @@ def export_to_excel(job_id,user,sample_pks):
         # # print os.path.join(default_storage.location,path_to_save)
         os.mkdir(folder_path)
 
-    non_unique_name = "sampledb_sample_export_p:" + str(project_id) + "_u:" + user.username + "_" + now().strftime("%Y-%m-%d %H:%M:%S") + ".xlsx"
+    #non_unique_name = "sampledb_sample_export_p:" + str(project_id) + "_u:" + user.username + "_" + now().strftime("%Y-%m-%d %H:%M:%S") + ".xlsx"
+
+    # stripped_project_title
+    project_title = samples[0].project.title[0:30]
+
+    # stripped_study_title
+    study_title = samples[0].study_title[0:30]
+
+    non_unique_name = "sampledb_export_%s_%s_%s_%s.xlsx" % (project_title,study_title,user.username,now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    non_unique_name = non_unique_name.replace(" ","_")
 
     file_name = build_and_check_file_name(folder_path,0,non_unique_name)
 
