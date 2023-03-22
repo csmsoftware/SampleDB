@@ -4,7 +4,7 @@
 
 SampleDB is an open-source Python/Django web application for recording the physical location of pseudo-anonymised samples, in line with the Human Tissue Act (HTA).
 
-Developed by [Gordon Haggart](https://github.com/ghaggart) for Imperial College London.
+Developed by Imperial College London.
 
 Apache 2 licence. 
 
